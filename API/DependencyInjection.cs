@@ -1,0 +1,85 @@
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Reporting.API.Services;
+using Reporting.BBL.Interfaces;
+using Reporting.Common.Constants;
+using Reporting.DAL.EF;
+
+namespace Reporting.API
+{
+    public static class DependencyInjection
+    {
+        public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<ReportingDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString(AppConstants.ReportingDb),
+                    b => b.MigrationsAssembly(typeof(ReportingDbContext).Assembly.FullName)));
+
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(configuration[AppConstants.CorsOrigin])
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+            
+            var key = Encoding.ASCII.GetBytes(configuration[AppConstants.Secret]);
+
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                    };
+
+                    x.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            if (!string.IsNullOrEmpty(accessToken))
+                            {
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        },
+                    };
+                });
+
+            return services;
+        }
+
+        public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+            return services;
+        }
+
+    }
+}
