@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.API", "API\Reporting.API.csproj", "{EFD6C5FF-73D0-4D29-A5BC-2FEB2A811CD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.API", "Reporting.API\Reporting.API.csproj", "{EFD6C5FF-73D0-4D29-A5BC-2FEB2A811CD3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.BBL", "BBL\Reporting.BBL.csproj", "{C6154217-6421-4BA1-8FB9-BA9C83BD04AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.BBL", "Reporting.BBL\Reporting.BBL.csproj", "{C6154217-6421-4BA1-8FB9-BA9C83BD04AB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.DAL", "DAL\Reporting.DAL.csproj", "{32EC97C5-1F7B-4C37-B08B-F463733F52B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.DAL", "Reporting.DAL\Reporting.DAL.csproj", "{32EC97C5-1F7B-4C37-B08B-F463733F52B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.Common", "Common\Reporting.Common.csproj", "{33444709-4FC0-4D2A-AC97-A2781A1C7A21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.Common", "Reporting.Common\Reporting.Common.csproj", "{33444709-4FC0-4D2A-AC97-A2781A1C7A21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
