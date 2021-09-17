@@ -18,7 +18,6 @@ namespace Reporting.API
         {
             _configuration = configuration;
         }
-        
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -85,9 +84,9 @@ namespace Reporting.API
             app.UseStaticFiles();
 
             app.UseRouting();
-            
+
             app.UseCors();
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 

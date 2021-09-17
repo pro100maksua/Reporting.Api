@@ -35,7 +35,7 @@ namespace Reporting.API
                         .AllowCredentials();
                 });
             });
-            
+
             var key = Encoding.ASCII.GetBytes(configuration[AppConstants.Secret]);
 
             services.AddAuthentication(x =>
@@ -80,6 +80,5 @@ namespace Reporting.API
 
             return services;
         }
-
     }
 }
