@@ -9,5 +9,18 @@
         public int PagesCount { get; set; }
         public double PrintedPagesCount { get; set; }
         public string Authors { get; set; }
+        public string Doi { get; set; }
+        public string Publisher { get; set; }
+        public string Isbn { get; set; }
+        public string Abstract { get; set; }
+        public string ArticleNumber { get; set; }
+        public string PdfUrl { get; set; }
+        public string HtmlUrl { get; set; }
+        public string ConferenceLocation { get; set; }
+        public int? CitingPaperCount { get; set; }
+        public int? CitingPatentCount { get; set; }
+        
+        public int TypeId { get; set; }
+        public PublicationType Type { get; set; }
     }
 }
