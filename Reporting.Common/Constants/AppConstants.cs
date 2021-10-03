@@ -7,5 +7,8 @@
         public const string CorsOrigin = "CorsOrigin";
 
         public const string Secret = "Secret";
+
+        public const string IeeeXploreApiUrl = "IeeeXploreApiUrl";
+        public const string IeeeXploreApiKey = "IeeeXploreApiKey";
     }
 }
