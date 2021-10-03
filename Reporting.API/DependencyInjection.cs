@@ -7,10 +7,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Reporting.API.Services;
+using Reporting.BBL.ApiInterfaces;
+using Reporting.BBL.Infrastructure.Mappings;
 using Reporting.BBL.Interfaces;
+using Reporting.BBL.Services;
 using Reporting.Common.Constants;
 using Reporting.DAL.EF;
+using Reporting.DAL.Repositories;
+using Reporting.Domain.Interfaces;
+using RestEase;
+using RestEase.HttpClientFactory;
 
 namespace Reporting.API
 {
@@ -22,7 +31,7 @@ namespace Reporting.API
                 options.UseSqlServer(configuration.GetConnectionString(AppConstants.ReportingDb),
                     b => b.MigrationsAssembly(typeof(ReportingDbContext).Assembly.FullName)));
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(typeof(MappingProfile).Assembly);
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             services.AddCors(options =>
@@ -76,7 +85,21 @@ namespace Reporting.API
 
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddRestEaseClient<IIeeeXploreApi>(configuration[AppConstants.IeeeXploreApiUrl], c =>
+                c.JsonSerializerSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy(),
+                    },
+                });
+
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+            services.AddTransient<IPublicationsService, PublicationsService>();
+
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
             return services;
         }
