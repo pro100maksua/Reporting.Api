@@ -16,6 +16,22 @@ namespace Reporting.API.Controllers
             _publicationsService = publicationsService;
         }
 
+        [HttpGet("PublicationTypes")]
+        public async Task<ActionResult> GetPublicationTypes()
+        {
+            var types = await _publicationsService.GetPublicationTypes();
+
+            return Ok(types);
+        }
+
+        [HttpGet("Publications")]
+        public async Task<ActionResult> GetPublications()
+        {
+            var publications = await _publicationsService.GetPublications();
+
+            return Ok(publications);
+        }
+
         [HttpPost("Publications")]
         public async Task<ActionResult> CreatePublication([FromBody] CreatePublicationDto dto)
         {
@@ -24,10 +40,23 @@ namespace Reporting.API.Controllers
             return Ok(publication);
         }
 
-        [HttpGet("ScopusArticles")]
-        public async Task<ActionResult> GetPublicationFromScopus([FromQuery] string title)
+        [HttpDelete("Publications/{id}")]
+        public async Task<ActionResult> DeletePublication(int id)
         {
-            var publication = await _publicationsService.GetPublicationFromScopus(title);
+            await _publicationsService.DeletePublication(id);
+
+            return Ok();
+        }
+
+        [HttpGet("ScopusArticles")]
+        public async Task<ActionResult> GetPublicationFromScopus([FromQuery] string articleNumber, [FromQuery] string title)
+        {
+            var publication = await _publicationsService.GetPublicationFromScopus(articleNumber, title);
+
+            if (publication == null)
+            {
+                return BadRequest(new { message = "Статтю не знайдено." });
+            }
 
             return Ok(publication);
         }

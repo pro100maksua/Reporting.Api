@@ -10,6 +10,8 @@ namespace Reporting.BBL.Infrastructure.Mappings
     {
         public PublicationsMappingProfile()
         {
+            CreateMap<PublicationType, ComboboxItemDto>();
+
             CreateMap<CreatePublicationDto, Publication>()
                 .ForMember(p => p.Authors, opt => opt.MapFrom(a => string.Join(",", a.Authors)));
 

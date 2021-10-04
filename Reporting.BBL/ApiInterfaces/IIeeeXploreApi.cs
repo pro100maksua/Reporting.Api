@@ -10,6 +10,7 @@ namespace Reporting.BBL.ApiInterfaces
         string ApiKey { get; set; }
 
         [Get("search/articles")]
-        Task<ScopusSearchResult> GetArticlesAsync([Query("article_title")] string title);
+        Task<ScopusSearchResult> GetArticlesAsync([Query("article_number")] string articleNumber,
+            [Query("article_title")] string title);
     }
 }
