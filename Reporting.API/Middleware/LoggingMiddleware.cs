@@ -59,22 +59,18 @@ namespace Reporting.API.Middleware
 
         private async Task<string> FormatRequest(HttpRequest request)
         {
-            var body = request.Body;
+            string bodyAsText;
 
-            // This line allows us to set the reader for the request back at the beginning of its stream.
+            // Allows using several time the stream in ASP.Net Core
             request.EnableBuffering();
 
-            // We now need to read the request stream.  First, we create a new byte[] with the same length as the request stream...
-            var buffer = new byte[Convert.ToInt32(request.ContentLength)];
+            using (var reader = new StreamReader(request.Body, Encoding.UTF8, true, 1024, true))
+            {
+                bodyAsText = await reader.ReadToEndAsync();
+            }
 
-            // ...Then we copy the entire request stream into the new buffer.
-            await request.Body.ReadAsync(buffer, 0, buffer.Length);
-
-            // We convert the byte[] into a string using UTF8 encoding...
-            var bodyAsText = Encoding.UTF8.GetString(buffer);
-
-            // ..and finally, assign the read body back to the request body, which is allowed because of EnableRewind()
-            request.Body = body;
+            // Rewind, so the core is not lost when it looks the body for the request
+            request.Body.Position = 0;
 
             return $"{request.Scheme} {request.Method} {request.Host}{request.Path}{request.QueryString} {bodyAsText}";
         }

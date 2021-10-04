@@ -45,6 +45,16 @@ namespace Reporting.BBL.Services
             return dtos;
         }
 
+        public async Task<IEnumerable<PublicationDto>> GetPublications()
+        {
+            var types = await _publicationRepository.GetAll(
+                includeProperties: new[] { nameof(Publication.Type) });
+
+            var dtos = _mapper.Map<IEnumerable<PublicationDto>>(types);
+
+            return dtos;
+        }
+
         public async Task<PublicationDto> CreatePublication(CreatePublicationDto dto)
         {
             var publication = _mapper.Map<CreatePublicationDto, Publication>(dto);
@@ -52,9 +62,16 @@ namespace Reporting.BBL.Services
             await _publicationRepository.Add(publication);
             await _unitOfWork.SaveChanges();
 
-            publication = await _publicationRepository.Get(publication.Id);
+            publication =
+                await _publicationRepository.Get(p => p.Id == publication.Id, new[] { nameof(Publication.Type) });
 
             return _mapper.Map<Publication, PublicationDto>(publication);
+        }
+
+        public async Task DeletePublication(int id)
+        {
+            await _publicationRepository.Remove(id);
+            await _unitOfWork.SaveChanges();
         }
 
         public async Task<PublicationDto> GetPublicationFromScopus(string articleNumber, string title)

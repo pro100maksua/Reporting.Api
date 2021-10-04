@@ -7,7 +7,9 @@ namespace Reporting.BBL.Interfaces
     public interface IPublicationsService
     {
         Task<IEnumerable<ComboboxItemDto>> GetPublicationTypes();
+        Task<IEnumerable<PublicationDto>> GetPublications();
         Task<PublicationDto> CreatePublication(CreatePublicationDto dto);
+        Task DeletePublication(int id);
         Task<PublicationDto> GetPublicationFromScopus(string articleNumber, string title);
     }
 }

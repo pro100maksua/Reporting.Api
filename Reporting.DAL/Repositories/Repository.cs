@@ -65,7 +65,7 @@ namespace Reporting.DAL.Repositories
                 }
             }
 
-            return _dbSet.FirstOrDefaultAsync(predicate);
+            return query.FirstOrDefaultAsync(predicate);
         }
 
         public virtual async Task Add(TEntity entity)

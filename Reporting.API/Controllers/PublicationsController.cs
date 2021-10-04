@@ -24,12 +24,28 @@ namespace Reporting.API.Controllers
             return Ok(types);
         }
 
+        [HttpGet("Publications")]
+        public async Task<ActionResult> GetPublications()
+        {
+            var publications = await _publicationsService.GetPublications();
+
+            return Ok(publications);
+        }
+
         [HttpPost("Publications")]
         public async Task<ActionResult> CreatePublication([FromBody] CreatePublicationDto dto)
         {
             var publication = await _publicationsService.CreatePublication(dto);
 
             return Ok(publication);
+        }
+
+        [HttpDelete("Publications/{id}")]
+        public async Task<ActionResult> DeletePublication(int id)
+        {
+            await _publicationsService.DeletePublication(id);
+
+            return Ok();
         }
 
         [HttpGet("ScopusArticles")]

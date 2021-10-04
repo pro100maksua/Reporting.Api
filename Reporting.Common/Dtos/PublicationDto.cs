@@ -27,5 +27,6 @@ namespace Reporting.Common.Dtos
 
         public int TypeId { get; set; }
         public string TypeName { get; set; }
+        public int TypeValue { get; set; }
     }
 }
