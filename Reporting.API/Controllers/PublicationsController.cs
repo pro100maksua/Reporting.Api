@@ -40,6 +40,14 @@ namespace Reporting.API.Controllers
             return Ok(publication);
         }
 
+        [HttpPut("Publications/{id}")]
+        public async Task<ActionResult> UpdatePublication(int id, [FromBody] CreatePublicationDto dto)
+        {
+            var publication = await _publicationsService.UpdatePublication(id, dto);
+
+            return Ok(publication);
+        }
+
         [HttpDelete("Publications/{id}")]
         public async Task<ActionResult> DeletePublication(int id)
         {
