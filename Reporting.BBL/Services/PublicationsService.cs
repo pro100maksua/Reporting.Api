@@ -68,6 +68,25 @@ namespace Reporting.BBL.Services
             return _mapper.Map<Publication, PublicationDto>(publication);
         }
 
+        public async Task<PublicationDto> UpdatePublication(int id, CreatePublicationDto dto)
+        {
+            var publication = await _publicationRepository.Get(id);
+
+            if (publication == null)
+            {
+                return null;
+            }
+
+            _mapper.Map(dto, publication);
+
+            await _unitOfWork.SaveChanges();
+
+            publication =
+                await _publicationRepository.Get(p => p.Id == publication.Id, new[] { nameof(Publication.Type) });
+
+            return _mapper.Map<Publication, PublicationDto>(publication);
+        }
+
         public async Task DeletePublication(int id)
         {
             await _publicationRepository.Remove(id);
