@@ -19,7 +19,6 @@ using Reporting.Common.Constants;
 using Reporting.DAL.EF;
 using Reporting.DAL.Repositories;
 using Reporting.Domain.Interfaces;
-using RestEase;
 using RestEase.HttpClientFactory;
 
 namespace Reporting.API
@@ -103,7 +102,9 @@ namespace Reporting.API
 
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
+            services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IPublicationsService, PublicationsService>();
+            services.AddTransient<IUsersService, UsersService>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
