@@ -1,6 +1,4 @@
-﻿using System;
-using AutoMapper;
-using Reporting.Common.ApiModels;
+﻿using AutoMapper;
 using Reporting.Common.Dtos;
 using Reporting.Domain.Entities;
 
@@ -11,6 +9,8 @@ namespace Reporting.BBL.Infrastructure.Mappings
         public UsersMappingProfile()
         {
             CreateMap<RegisterDto, User>();
+
+            CreateMap<User, UserDto>();
 
             CreateMap<Role, ComboboxItemDto>();
 

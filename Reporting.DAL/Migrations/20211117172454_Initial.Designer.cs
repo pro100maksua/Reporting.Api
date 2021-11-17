@@ -10,7 +10,7 @@ using Reporting.DAL.EF;
 namespace Reporting.DAL.Migrations
 {
     [DbContext(typeof(ReportingDbContext))]
-    [Migration("20211116170924_Initial")]
+    [Migration("20211117172454_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -247,6 +247,9 @@ namespace Reporting.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

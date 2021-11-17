@@ -23,18 +23,30 @@ namespace Reporting.API.Controllers
 
             if (token == null)
             {
-                return Ok(new { message = "Username or password is incorrect" });
+                return BadRequest(new { message = "Пошта або пароль неправильні" });
             }
-            
+
             return Ok(new { Token = token });
         }
 
         [HttpPost("Register")]
         public async Task<ActionResult> Register([FromBody] RegisterDto dto)
         {
-            var token = await _authService.Register(dto);
+            var response = await _authService.Register(dto);
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return BadRequest(new { message = response.ErrorMessage });
+            }
 
-            return Ok(new { Token = token });
+            return Ok(new { Token = response.Value });
+        }
+
+        [HttpPost("ValidateEmail")]
+        public async Task<IActionResult> ValidateEmail([FromBody] ValidateValueDto dto)
+        {
+            var errorMessage = await _authService.ValidateEmail(dto);
+
+            return Ok(new { message = errorMessage });
         }
     }
 }

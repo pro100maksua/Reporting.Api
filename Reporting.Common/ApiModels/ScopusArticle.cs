@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-
-namespace Reporting.Common.ApiModels
+﻿namespace Reporting.Common.ApiModels
 {
     public class ScopusArticle
     {

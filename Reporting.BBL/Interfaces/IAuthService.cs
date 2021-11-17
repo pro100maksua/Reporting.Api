@@ -6,6 +6,7 @@ namespace Reporting.BBL.Interfaces
     public interface IAuthService
     {
         Task<string> Login(LoginDto dto);
-        Task<string> Register(RegisterDto dto);
+        Task<ResponseDto<string>> Register(RegisterDto dto);
+        Task<string> ValidateEmail(ValidateValueDto dto);
     }
 }

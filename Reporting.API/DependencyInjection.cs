@@ -19,7 +19,6 @@ using Reporting.Common.Constants;
 using Reporting.DAL.EF;
 using Reporting.DAL.Repositories;
 using Reporting.Domain.Interfaces;
-using RestEase;
 using RestEase.HttpClientFactory;
 
 namespace Reporting.API

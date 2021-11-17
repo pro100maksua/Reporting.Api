@@ -2,9 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
-using Reporting.BBL.ApiInterfaces;
 using Reporting.BBL.Interfaces;
-using Reporting.Common.Constants;
 using Reporting.Common.Dtos;
 using Reporting.Domain.Entities;
 using Reporting.Domain.Interfaces;

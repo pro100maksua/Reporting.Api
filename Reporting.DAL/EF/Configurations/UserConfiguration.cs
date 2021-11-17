@@ -19,6 +19,8 @@ namespace Reporting.DAL.EF.Configurations
 
             builder.Property(e => e.ScopusAuthorName).HasMaxLength(250);
 
+            builder.HasIndex(e => e.Email).IsUnique();
+
             builder.HasOne(e => e.Department)
                 .WithMany()
                 .HasForeignKey(e => e.DepartmentId);

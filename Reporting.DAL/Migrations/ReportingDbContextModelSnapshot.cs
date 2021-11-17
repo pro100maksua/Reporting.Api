@@ -246,6 +246,9 @@ namespace Reporting.DAL.Migrations
 
                     b.HasIndex("DepartmentId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Users");
                 });
 

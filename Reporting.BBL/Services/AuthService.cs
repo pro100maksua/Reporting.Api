@@ -48,8 +48,17 @@ namespace Reporting.BBL.Services
             return GenerateToken(user);
         }
 
-        public async Task<string> Register(RegisterDto dto)
+        public async Task<ResponseDto<string>> Register(RegisterDto dto)
         {
+            var response = new ResponseDto<string>();
+
+            var errorMessage = await ValidateUserEmail(dto.Email);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                response.ErrorMessage = errorMessage;
+                return response;
+            }
+
             var user = _mapper.Map<User>(dto);
 
             user.Password = CryptoHelper.GetMd5Hash(dto.Password);
@@ -60,7 +69,15 @@ namespace Reporting.BBL.Services
             await _usersRepository.Add(user);
             await _unitOfWork.SaveChanges();
 
-            return GenerateToken(user);
+            response.Value = GenerateToken(user);
+            return response;
+        }
+
+        public async Task<string> ValidateEmail(ValidateValueDto dto)
+        {
+            var errorMessage = await ValidateUserEmail(dto.Value);
+
+            return string.IsNullOrWhiteSpace(errorMessage) ? null : errorMessage;
         }
 
         private string GenerateToken(User user)
@@ -68,7 +85,11 @@ namespace Reporting.BBL.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration[AppConstants.Secret]);
 
-            var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, user.Id.ToString()) };
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+            };
             claims.AddRange(user.Roles.Select(e => new Claim(ClaimTypes.Role, e.Value.ToString())));
 
             var tokenDescription = new SecurityTokenDescriptor
@@ -81,6 +102,18 @@ namespace Reporting.BBL.Services
 
             var token = tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescription));
             return token;
+        }
+
+        private async Task<string> ValidateUserEmail(string email)
+        {
+            var users = await _usersRepository.GetAll();
+
+            if (users.Any(e => string.Equals(e.Email, email, StringComparison.OrdinalIgnoreCase)))
+            {
+                return "Дана пошта вже зайнята";
+            }
+
+            return null;
         }
     }
 }
