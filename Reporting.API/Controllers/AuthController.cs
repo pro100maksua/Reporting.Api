@@ -48,5 +48,25 @@ namespace Reporting.API.Controllers
 
             return Ok(new { message = errorMessage });
         }
+
+        [HttpPut("LoggedInUser")]
+        public async Task<ActionResult> UpdateLoggedInUser([FromBody] RegisterDto dto)
+        {
+            var response = await _authService.UpdateLoggedInUser(dto);
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return BadRequest(new { message = response.ErrorMessage });
+            }
+
+            return Ok(new { Token = response.Value });
+        }
+
+        [HttpGet("LoggedInUser")]
+        public async Task<ActionResult> GetLoggedInUser()
+        {
+            var user = await _authService.GetLoggedInUser();
+
+            return Ok(user);
+        }
     }
 }

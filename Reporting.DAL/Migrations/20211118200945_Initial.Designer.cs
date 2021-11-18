@@ -10,7 +10,7 @@ using Reporting.DAL.EF;
 namespace Reporting.DAL.Migrations
 {
     [DbContext(typeof(ReportingDbContext))]
-    [Migration("20211117172454_Initial")]
+    [Migration("20211118200945_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,48 @@ namespace Reporting.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Reporting.Domain.Entities.Conference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Number")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Conferences");
+                });
 
             modelBuilder.Entity("Reporting.Domain.Entities.Department", b =>
                 {
@@ -89,6 +131,9 @@ namespace Reporting.DAL.Migrations
                     b.Property<int?>("CitingPatentCount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ConferenceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConferenceLocation")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -150,6 +195,8 @@ namespace Reporting.DAL.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ConferenceId");
 
                     b.HasIndex("TypeId");
 
@@ -282,11 +329,18 @@ namespace Reporting.DAL.Migrations
 
             modelBuilder.Entity("Reporting.Domain.Entities.Publication", b =>
                 {
+                    b.HasOne("Reporting.Domain.Entities.Conference", "Conference")
+                        .WithMany("Publications")
+                        .HasForeignKey("ConferenceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Reporting.Domain.Entities.PublicationType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Conference");
 
                     b.Navigation("Type");
                 });
@@ -315,6 +369,11 @@ namespace Reporting.DAL.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Reporting.Domain.Entities.Conference", b =>
+                {
+                    b.Navigation("Publications");
                 });
 
             modelBuilder.Entity("Reporting.Domain.Entities.Faculty", b =>

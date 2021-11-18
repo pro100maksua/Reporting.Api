@@ -8,6 +8,26 @@ namespace Reporting.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Conferences",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Number = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Location = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Conferences", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Faculties",
                 columns: table => new
                 {
@@ -92,6 +112,7 @@ namespace Reporting.DAL.Migrations
                     CitingPaperCount = table.Column<int>(type: "int", nullable: true),
                     CitingPatentCount = table.Column<int>(type: "int", nullable: true),
                     TypeId = table.Column<int>(type: "int", nullable: false),
+                    ConferenceId = table.Column<int>(type: "int", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -100,6 +121,12 @@ namespace Reporting.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Publications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Publications_Conferences_ConferenceId",
+                        column: x => x.ConferenceId,
+                        principalTable: "Conferences",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Publications_PublicationTypes_TypeId",
                         column: x => x.TypeId,
@@ -164,6 +191,11 @@ namespace Reporting.DAL.Migrations
                 name: "IX_Departments_FacultyId",
                 table: "Departments",
                 column: "FacultyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Publications_ConferenceId",
+                table: "Publications",
+                column: "ConferenceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Publications_TypeId",
@@ -260,6 +292,9 @@ VALUES      (N'Кафедра інформаційної та соціокуль
 
             migrationBuilder.DropTable(
                 name: "UserRoles");
+
+            migrationBuilder.DropTable(
+                name: "Conferences");
 
             migrationBuilder.DropTable(
                 name: "PublicationTypes");
