@@ -16,8 +16,10 @@ namespace Reporting.Common.Dtos
         public int CitingPaperCount { get; set; }
         public int CitingPatentCount { get; set; }
         public string Title { get; set; }
+        public string PublicationNumber { get; set; }
         public string PublicationTitle { get; set; }
         public int PublicationYear { get; set; }
+        public string ContentType { get; set; }
         public string StartPage { get; set; }
         public string EndPage { get; set; }
         public int PagesCount { get; set; }

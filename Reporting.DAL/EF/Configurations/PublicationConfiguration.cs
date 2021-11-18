@@ -30,6 +30,11 @@ namespace Reporting.DAL.EF.Configurations
                 .WithMany()
                 .HasForeignKey(e => e.TypeId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.Conference)
+                .WithMany(e => e.Publications)
+                .HasForeignKey(e => e.ConferenceId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

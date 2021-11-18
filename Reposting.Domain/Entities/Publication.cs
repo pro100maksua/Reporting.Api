@@ -1,4 +1,6 @@
-﻿namespace Reporting.Domain.Entities
+﻿using System.Collections;
+
+namespace Reporting.Domain.Entities
 {
     public class Publication : AuditableEntity
     {
@@ -19,8 +21,11 @@
         public string ConferenceLocation { get; set; }
         public int? CitingPaperCount { get; set; }
         public int? CitingPatentCount { get; set; }
-        
+
         public int TypeId { get; set; }
         public PublicationType Type { get; set; }
+
+        public int? ConferenceId { get; set; }
+        public Conference Conference { get; set; }
     }
 }

@@ -7,6 +7,6 @@ namespace Reporting.Common.ApiModels
         public int TotalRecords { get; set; }
         public int TotalSearched { get; set; }
 
-        public IEnumerable<ScopusArticle> Articles { get; set; }
+        public IEnumerable<IeeeXploreArticle> Articles { get; set; }
     }
 }

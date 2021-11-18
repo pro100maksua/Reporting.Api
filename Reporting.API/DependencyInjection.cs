@@ -103,6 +103,7 @@ namespace Reporting.API
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IConferencesService, ConferencesService>();
             services.AddTransient<IPublicationsService, PublicationsService>();
             services.AddTransient<IUsersService, UsersService>();
 

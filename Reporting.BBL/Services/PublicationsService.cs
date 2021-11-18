@@ -18,17 +18,19 @@ namespace Reporting.BBL.Services
         private readonly IIeeeXploreApi _ieeeXploreApi;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Publication> _publicationRepository;
+        private readonly IRepository<Conference> _conferencesRepository;
         private readonly IRepository<PublicationType> _publicationTypeRepository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
         public PublicationsService(IIeeeXploreApi ieeeXploreApi, IUnitOfWork unitOfWork,
-            IRepository<Publication> publicationRepository, IRepository<PublicationType> publicationTypeRepository,
-            IConfiguration configuration, IMapper mapper)
+            IRepository<Publication> publicationRepository, IRepository<Conference> conferencesRepository,
+            IRepository<PublicationType> publicationTypeRepository, IConfiguration configuration, IMapper mapper)
         {
             _ieeeXploreApi = ieeeXploreApi;
             _unitOfWork = unitOfWork;
             _publicationRepository = publicationRepository;
+            _conferencesRepository = conferencesRepository;
             _publicationTypeRepository = publicationTypeRepository;
             _configuration = configuration;
             _mapper = mapper;
@@ -58,6 +60,25 @@ namespace Reporting.BBL.Services
         public async Task<PublicationDto> CreatePublication(CreatePublicationDto dto)
         {
             var publication = _mapper.Map<CreatePublicationDto, Publication>(dto);
+
+            if (dto.ContentType == AppConstants.Conferences)
+            {
+                var conference = await _conferencesRepository.Get(e => e.Number == dto.PublicationNumber);
+                if (conference != null)
+                {
+                    publication.ConferenceId = conference.Id;
+                }
+                else
+                {
+                    publication.Conference = new Conference
+                    {
+                        Number = dto.PublicationNumber,
+                        Location = dto.ConferenceLocation,
+                        Title = dto.PublicationTitle,
+                        Year = dto.PublicationYear,
+                    };
+                }
+            }
 
             await _publicationRepository.Add(publication);
             await _unitOfWork.SaveChanges();
@@ -93,7 +114,7 @@ namespace Reporting.BBL.Services
             await _unitOfWork.SaveChanges();
         }
 
-        public async Task<PublicationDto> GetPublicationFromScopus(string articleNumber, string title)
+        public async Task<PublicationDto> GetPublicationFromIeeeXplore(string articleNumber, string title)
         {
             articleNumber = articleNumber?.Trim();
             title = title?.Trim();
@@ -107,7 +128,7 @@ namespace Reporting.BBL.Services
 
             var article = result.Articles?.FirstOrDefault(a => a.ArticleNumber == articleNumber || a.Title == title);
 
-            var dto = _mapper.Map<ScopusArticle, PublicationDto>(article);
+            var dto = _mapper.Map<IeeeXploreArticle, PublicationDto>(article);
 
             return dto;
         }

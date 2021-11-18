@@ -61,7 +61,7 @@ namespace Reporting.API.Controllers
         [HttpGet("ScopusArticles")]
         public async Task<ActionResult> GetPublicationFromScopus([FromQuery] string articleNumber, [FromQuery] string title)
         {
-            var publication = await _publicationsService.GetPublicationFromScopus(articleNumber, title);
+            var publication = await _publicationsService.GetPublicationFromIeeeXplore(articleNumber, title);
 
             if (publication == null)
             {
