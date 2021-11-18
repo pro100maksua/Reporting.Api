@@ -4,6 +4,6 @@ namespace Reporting.Common.ApiModels
 {
     public class ScopusAuthors
     {
-        public IEnumerable<ScopusAuthor> Authors { get; set; }
+        public IEnumerable<IeeeXploreAuthor> Authors { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Reporting.Common.ApiModels
 {
-    public class ScopusArticle
+    public class IeeeXploreArticle
     {
         public string Doi { get; set; }
         public string Title { get; set; }
@@ -11,6 +11,7 @@
         public string ArticleNumber { get; set; }
         public string PdfUrl { get; set; }
         public string HtmlUrl { get; set; }
+        public string PublicationNumber { get; set; }
         public string PublicationTitle { get; set; }
         public string ConferenceLocation { get; set; }
         public int PublicationYear { get; set; }

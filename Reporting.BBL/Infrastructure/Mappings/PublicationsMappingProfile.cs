@@ -22,12 +22,12 @@ namespace Reporting.BBL.Infrastructure.Mappings
             CreateMap<string, PublicationAuthorDto>()
                 .ForMember(p => p.FullName, opt => opt.MapFrom(s => s));
 
-            CreateMap<ScopusArticle, PublicationDto>()
+            CreateMap<IeeeXploreArticle, PublicationDto>()
                 .ForMember(p => p.Authors, opt => opt.MapFrom(a => a.Authors.Authors))
                 .ForMember(p => p.PagesCount,
                     opt => opt.MapFrom(a => int.Parse(a.EndPage) - int.Parse(a.StartPage) + 1));
 
-            CreateMap<ScopusAuthor, PublicationAuthorDto>();
+            CreateMap<IeeeXploreAuthor, PublicationAuthorDto>();
         }
     }
 }

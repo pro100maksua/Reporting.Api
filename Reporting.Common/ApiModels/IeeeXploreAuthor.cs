@@ -1,6 +1,6 @@
 ﻿namespace Reporting.Common.ApiModels
 {
-    public class ScopusAuthor
+    public class IeeeXploreAuthor
     {
         public string Id { get; set; }
         public string FullName { get; set; }

@@ -11,6 +11,6 @@ namespace Reporting.BBL.Interfaces
         Task<PublicationDto> CreatePublication(CreatePublicationDto dto);
         Task<PublicationDto> UpdatePublication(int id, CreatePublicationDto dto);
         Task DeletePublication(int id);
-        Task<PublicationDto> GetPublicationFromScopus(string articleNumber, string title);
+        Task<PublicationDto> GetPublicationFromIeeeXplore(string articleNumber, string title);
     }
 }
