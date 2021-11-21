@@ -10,7 +10,7 @@ using Reporting.DAL.EF;
 namespace Reporting.DAL.Migrations
 {
     [DbContext(typeof(ReportingDbContext))]
-    [Migration("20211118200945_Initial")]
+    [Migration("20211121151544_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,21 @@ namespace Reporting.DAL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("PublicationUser", b =>
+                {
+                    b.Property<int>("AuthorsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PublicationsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AuthorsId", "PublicationsId");
+
+                    b.HasIndex("PublicationsId");
+
+                    b.ToTable("UserPublications");
+                });
 
             modelBuilder.Entity("Reporting.Domain.Entities.Conference", b =>
                 {
@@ -120,11 +135,6 @@ namespace Reporting.DAL.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("Authors")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<int?>("CitingPaperCount")
                         .HasColumnType("int");
 
@@ -183,6 +193,10 @@ namespace Reporting.DAL.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Publisher")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ScopusAuthors")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -270,6 +284,10 @@ namespace Reporting.DAL.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
+                    b.Property<string>("IeeeXploreAuthorName")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -284,10 +302,6 @@ namespace Reporting.DAL.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<string>("ScopusAuthorName")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
@@ -314,6 +328,21 @@ namespace Reporting.DAL.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("UserRoles");
+                });
+
+            modelBuilder.Entity("PublicationUser", b =>
+                {
+                    b.HasOne("Reporting.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Reporting.Domain.Entities.Publication", null)
+                        .WithMany()
+                        .HasForeignKey("PublicationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Reporting.Domain.Entities.Department", b =>

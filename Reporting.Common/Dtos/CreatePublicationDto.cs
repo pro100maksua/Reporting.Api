@@ -9,7 +9,7 @@
         public int PublicationYear { get; set; }
         public int PagesCount { get; set; }
         public double PrintedPagesCount { get; set; }
-        public string[] Authors { get; set; }
+        public string ScopusAuthors { get; set; }
         public string Doi { get; set; }
         public string Publisher { get; set; }
         public string Isbn { get; set; }

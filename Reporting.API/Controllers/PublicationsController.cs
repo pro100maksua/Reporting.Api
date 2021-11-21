@@ -12,10 +12,12 @@ namespace Reporting.API.Controllers
     public class PublicationsController : ControllerBase
     {
         private readonly IPublicationsService _publicationsService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public PublicationsController(IPublicationsService publicationsService)
+        public PublicationsController(IPublicationsService publicationsService, ICurrentUserService currentUserService)
         {
             _publicationsService = publicationsService;
+            _currentUserService = currentUserService;
         }
 
         [HttpGet("PublicationTypes")]
@@ -26,10 +28,12 @@ namespace Reporting.API.Controllers
             return Ok(types);
         }
 
-        [HttpGet("Publications")]
-        public async Task<ActionResult> GetPublications()
+        [HttpGet("UserPublications")]
+        public async Task<ActionResult> GetUserPublications()
         {
-            var publications = await _publicationsService.GetPublications();
+            var userId = int.Parse(_currentUserService.UserId);
+
+            var publications = await _publicationsService.GetUserPublications(userId);
 
             return Ok(publications);
         }
@@ -69,6 +73,14 @@ namespace Reporting.API.Controllers
             }
 
             return Ok(publication);
+        }
+
+        [HttpPost("LoadScientificJournalsCategoryB")]
+        public async Task<ActionResult> LoadScientificJournalsCategoryB()
+        {
+            await _publicationsService.LoadScientificJournalsCategoryB();
+
+            return Ok();
         }
     }
 }
