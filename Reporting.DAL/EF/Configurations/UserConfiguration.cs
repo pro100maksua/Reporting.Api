@@ -17,7 +17,7 @@ namespace Reporting.DAL.EF.Configurations
             builder.Property(e => e.Email).IsRequired().HasMaxLength(250);
             builder.Property(e => e.Password).IsRequired().HasMaxLength(250);
 
-            builder.Property(e => e.ScopusAuthorName).HasMaxLength(250);
+            builder.Property(e => e.IeeeXploreAuthorName).HasMaxLength(250);
 
             builder.HasIndex(e => e.Email).IsUnique();
 

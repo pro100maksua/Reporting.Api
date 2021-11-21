@@ -45,6 +45,8 @@ namespace Reporting.API
                 });
             });
 
+            services.AddMemoryCache();
+
             var key = Encoding.ASCII.GetBytes(configuration[AppConstants.Secret]);
 
             services.AddAuthentication(x =>
@@ -100,10 +102,13 @@ namespace Reporting.API
                     },
                 });
 
+            services.AddRestEaseClient<IScientificJournalsApi>(configuration[AppConstants.ScientificJournalsApiUrl]);
+
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IConferencesService, ConferencesService>();
+            services.AddTransient<IHtmlParserService, HtmlParserService>();
             services.AddTransient<IPublicationsService, PublicationsService>();
             services.AddTransient<IUsersService, UsersService>();
 

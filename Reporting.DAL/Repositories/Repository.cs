@@ -55,7 +55,7 @@ namespace Reporting.DAL.Repositories
 
         public virtual Task<TEntity> Get(Expression<Func<TEntity, bool>> predicate, string[] includeProperties = null)
         {
-            IQueryable<TEntity> query = _dbSet.AsNoTracking();
+            IQueryable<TEntity> query = _dbSet;
 
             if (includeProperties != null)
             {
@@ -96,6 +96,14 @@ namespace Reporting.DAL.Repositories
 
         public virtual void RemoveRange(IEnumerable<TEntity> entities)
         {
+            foreach (var entity in entities)
+            {
+                if (_context.Entry(entity).State == EntityState.Detached)
+                {
+                    _dbSet.Attach(entity);
+                }
+            }
+
             _dbSet.RemoveRange(entities);
         }
 

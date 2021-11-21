@@ -25,7 +25,8 @@ namespace Reporting.Common.Dtos
         public int PagesCount { get; set; }
         public double? PrintedPagesCount { get; set; }
 
-        public IEnumerable<PublicationAuthorDto> Authors { get; set; }
+        public string Authors { get; set; }
+        public string ScopusAuthors { get; set; }
 
         public int TypeId { get; set; }
         public string TypeName { get; set; }

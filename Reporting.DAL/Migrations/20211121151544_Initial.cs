@@ -8,6 +8,26 @@ namespace Reporting.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Conferences",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Number = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Location = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Conferences", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Faculties",
                 columns: table => new
                 {
@@ -80,7 +100,7 @@ namespace Reporting.DAL.Migrations
                     PublicationYear = table.Column<int>(type: "int", nullable: false),
                     PagesCount = table.Column<int>(type: "int", nullable: false),
                     PrintedPagesCount = table.Column<double>(type: "float", nullable: false),
-                    Authors = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ScopusAuthors = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Doi = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Publisher = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Isbn = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
@@ -92,6 +112,7 @@ namespace Reporting.DAL.Migrations
                     CitingPaperCount = table.Column<int>(type: "int", nullable: true),
                     CitingPatentCount = table.Column<int>(type: "int", nullable: true),
                     TypeId = table.Column<int>(type: "int", nullable: false),
+                    ConferenceId = table.Column<int>(type: "int", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -100,6 +121,12 @@ namespace Reporting.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Publications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Publications_Conferences_ConferenceId",
+                        column: x => x.ConferenceId,
+                        principalTable: "Conferences",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Publications_PublicationTypes_TypeId",
                         column: x => x.TypeId,
@@ -118,7 +145,7 @@ namespace Reporting.DAL.Migrations
                     LastName = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    ScopusAuthorName = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    IeeeXploreAuthorName = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
@@ -132,6 +159,30 @@ namespace Reporting.DAL.Migrations
                         name: "FK_Users_Departments_DepartmentId",
                         column: x => x.DepartmentId,
                         principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserPublications",
+                columns: table => new
+                {
+                    AuthorsId = table.Column<int>(type: "int", nullable: false),
+                    PublicationsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserPublications", x => new { x.AuthorsId, x.PublicationsId });
+                    table.ForeignKey(
+                        name: "FK_UserPublications_Publications_PublicationsId",
+                        column: x => x.PublicationsId,
+                        principalTable: "Publications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserPublications_Users_AuthorsId",
+                        column: x => x.AuthorsId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -166,9 +217,19 @@ namespace Reporting.DAL.Migrations
                 column: "FacultyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Publications_ConferenceId",
+                table: "Publications",
+                column: "ConferenceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Publications_TypeId",
                 table: "Publications",
                 column: "TypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPublications_PublicationsId",
+                table: "UserPublications",
+                column: "PublicationsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_UsersId",
@@ -256,19 +317,25 @@ VALUES      (N'Кафедра інформаційної та соціокуль
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Publications");
+                name: "UserPublications");
 
             migrationBuilder.DropTable(
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "PublicationTypes");
+                name: "Publications");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Conferences");
+
+            migrationBuilder.DropTable(
+                name: "PublicationTypes");
 
             migrationBuilder.DropTable(
                 name: "Departments");

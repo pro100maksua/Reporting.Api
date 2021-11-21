@@ -8,5 +8,6 @@
         public string Password { get; set; }
         public int DepartmentId { get; set; }
         public int RoleId { get; set; }
+        public string IeeeXploreAuthorName { get; set; }
     }
 }

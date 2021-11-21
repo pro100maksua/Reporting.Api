@@ -11,6 +11,9 @@
         public const string IeeeXploreApiUrl = "IeeeXploreApiUrl";
         public const string IeeeXploreApiKey = "IeeeXploreApiKey";
 
+        public const string ScientificJournalsApiUrl = "ScientificJournalsApiUrl";
+
         public const string Conferences = "Conferences";
+        public const string ScientificJournalsCategoryB = "ScientificJournalsCategoryB";
     }
 }

@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
     <PackageReference Include="RestEase" Version="1.5.5" />
     <PackageReference Include="RestEase.SourceGenerator" Version="1.5.5">
       <PrivateAssets>all</PrivateAssets>
