@@ -15,5 +15,7 @@
 
         public const string Conferences = "Conferences";
         public const string ScientificJournalsCategoryB = "ScientificJournalsCategoryB";
+
+        public const int CategoryBPublicationType = 5;
     }
 }

@@ -71,8 +71,17 @@ namespace Reporting.BBL.Services
             return dtos;
         }
 
-        public async Task<PublicationDto> CreatePublication(CreatePublicationDto dto)
+        public async Task<ResponseDto<PublicationDto>> CreatePublication(CreatePublicationDto dto)
         {
+            var response = new ResponseDto<PublicationDto>();
+
+            var errorMessage = await ValidationPublication(dto);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                response.ErrorMessage = errorMessage;
+                return response;
+            }
+
             var publication = await _publicationRepository.Get(e =>
                 (dto.ArticleNumber != null && e.ArticleNumber == dto.ArticleNumber) ||
                 e.Title == dto.Title, new[] { nameof(Publication.Authors) });
@@ -102,11 +111,21 @@ namespace Reporting.BBL.Services
             publication =
                 await _publicationRepository.Get(p => p.Id == publication.Id, new[] { nameof(Publication.Type) });
 
-            return _mapper.Map<Publication, PublicationDto>(publication);
+            response.Value = _mapper.Map<Publication, PublicationDto>(publication);
+            return response;
         }
 
-        public async Task<PublicationDto> UpdatePublication(int id, CreatePublicationDto dto)
+        public async Task<ResponseDto<PublicationDto>> UpdatePublication(int id, CreatePublicationDto dto)
         {
+            var response = new ResponseDto<PublicationDto>();
+
+            var errorMessage = await ValidationPublication(dto);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                response.ErrorMessage = errorMessage;
+                return response;
+            }
+
             var publication = await _publicationRepository.Get(id);
 
             if (publication == null)
@@ -121,7 +140,8 @@ namespace Reporting.BBL.Services
             publication =
                 await _publicationRepository.Get(p => p.Id == publication.Id, new[] { nameof(Publication.Type) });
 
-            return _mapper.Map<Publication, PublicationDto>(publication);
+            response.Value = _mapper.Map<Publication, PublicationDto>(publication);
+            return response;
         }
 
         public async Task DeletePublication(int id)
@@ -157,6 +177,23 @@ namespace Reporting.BBL.Services
 
                 _cache.Set(AppConstants.ScientificJournalsCategoryB, journals, TimeSpan.FromDays(1));
             }
+        }
+
+        private async Task<string> ValidationPublication(CreatePublicationDto dto)
+        {
+            var type = await _publicationTypeRepository.Get(dto.TypeId);
+
+            if (type.Value == AppConstants.CategoryBPublicationType)
+            {
+                var journals = await GetScientificJournalsCategoryB();
+
+                if (!journals.Contains(dto.PublicationTitle))
+                {
+                    return "Дане видавництво категорії Б не знайдено";
+                }
+            }
+
+            return null;
         }
 
         private async Task<IEnumerable<string>> GetScientificJournalsCategoryB()
