@@ -41,17 +41,25 @@ namespace Reporting.API.Controllers
         [HttpPost("Publications")]
         public async Task<ActionResult> CreatePublication([FromBody] CreatePublicationDto dto)
         {
-            var publication = await _publicationsService.CreatePublication(dto);
+            var response = await _publicationsService.CreatePublication(dto);
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return BadRequest(new { message = response.ErrorMessage });
+            }
 
-            return Ok(publication);
+            return Ok(response.Value);
         }
 
         [HttpPut("Publications/{id}")]
         public async Task<ActionResult> UpdatePublication(int id, [FromBody] CreatePublicationDto dto)
         {
-            var publication = await _publicationsService.UpdatePublication(id, dto);
+            var response = await _publicationsService.UpdatePublication(id, dto);
+            if (!string.IsNullOrEmpty(response.ErrorMessage))
+            {
+                return BadRequest(new { message = response.ErrorMessage });
+            }
 
-            return Ok(publication);
+            return Ok(response.Value);
         }
 
         [HttpDelete("Publications/{id}")]
