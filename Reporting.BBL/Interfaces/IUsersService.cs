@@ -9,5 +9,6 @@ namespace Reporting.BBL.Interfaces
         Task<IEnumerable<ComboboxItemDto>> GetRoles();
         Task<IEnumerable<ComboboxItemDto>> GetFaculties();
         Task<IEnumerable<DepartmentDto>> GetDepartments(int facultyValue);
+        Task UpdateUserIeeeXploreAuthorName(int userId, string name);
     }
 }

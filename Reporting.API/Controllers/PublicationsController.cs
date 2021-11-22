@@ -90,5 +90,13 @@ namespace Reporting.API.Controllers
 
             return Ok();
         }
+
+        [HttpPost("ImportScopusPublications")]
+        public async Task<ActionResult> ImportScopusPublications()
+        {
+            await _publicationsService.ImportScopusPublications();
+
+            return Ok();
+        }
     }
 }

@@ -13,5 +13,6 @@ namespace Reporting.BBL.Interfaces
         Task DeletePublication(int id);
         Task<PublicationDto> GetPublicationFromIeeeXplore(string articleNumber, string title);
         Task LoadScientificJournalsCategoryB();
+        Task ImportScopusPublications();
     }
 }
