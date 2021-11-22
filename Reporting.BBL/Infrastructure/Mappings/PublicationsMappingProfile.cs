@@ -2,6 +2,7 @@
 using System.Linq;
 using AutoMapper;
 using Reporting.Common.ApiModels;
+using Reporting.Common.Constants;
 using Reporting.Common.Dtos;
 using Reporting.Domain.Entities;
 
@@ -30,6 +31,14 @@ namespace Reporting.BBL.Infrastructure.Mappings
                     opt => opt.MapFrom(a => string.Join(", ", a.Authors.Authors.Select(u => u.FullName))))
                 .ForMember(p => p.PagesCount,
                     opt => opt.MapFrom(a => int.Parse(a.EndPage) - int.Parse(a.StartPage) + 1));
+
+            CreateMap<IeeeXploreArticle, CreatePublicationDto>()
+                .ForMember(p => p.ScopusAuthors,
+                    opt => opt.MapFrom(a => string.Join(", ", a.Authors.Authors.Select(u => u.FullName))))
+                .ForMember(p => p.PagesCount,
+                    opt => opt.MapFrom(a => int.Parse(a.EndPage) - int.Parse(a.StartPage) + 1))
+                .ForMember(p => p.TypeId,
+                    opt => opt.MapFrom((_, _, _, context) => context.Items[AppConstants.ScopusTypeId]));
 
             CreateMap<IeeeXploreAuthor, PublicationAuthorDto>();
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Reporting.BBL.Interfaces;
@@ -23,7 +24,9 @@ namespace Reporting.BBL.Services
 
         public async Task<IEnumerable<ConferenceDto>> GetConferences()
         {
-            var conferences = await _conferencesRepository.GetAll();
+            var conferences =
+                await _conferencesRepository.GetAll(orderBy: e =>
+                    e.OrderByDescending(c => c.Year).ThenBy(c => c.Title));
 
             var dtos = _mapper.Map<IEnumerable<ConferenceDto>>(conferences);
 

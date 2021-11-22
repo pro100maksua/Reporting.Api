@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Reporting.BBL.ApiInterfaces;
 using Reporting.BBL.Interfaces;
 using Reporting.Common.ApiModels;
@@ -64,7 +63,8 @@ namespace Reporting.BBL.Services
             var user = await _usersRepository.Get(userId);
 
             var types = await _publicationRepository.GetAll(e => e.Authors.Contains(user),
-                includeProperties: new[] { nameof(Publication.Type), nameof(Publication.Authors) });
+                e => e.OrderByDescending(c => c.PublicationYear).ThenBy(c => c.Title),
+                new[] { nameof(Publication.Type), nameof(Publication.Authors) });
 
             var dtos = _mapper.Map<IEnumerable<PublicationDto>>(types);
 
@@ -171,11 +171,35 @@ namespace Reporting.BBL.Services
 
         public async Task LoadScientificJournalsCategoryB()
         {
-            if (!_cache.TryGetValue(AppConstants.ScientificJournalsCategoryB, out _))
-            {
-                var journals = await _htmlParserService.GetScientificJournalsCategoryB();
+            //if (!_cache.TryGetValue(AppConstants.ScientificJournalsCategoryB, out _))
+            //{
+            //    var journals = await _htmlParserService.GetScientificJournalsCategoryB();
 
-                _cache.Set(AppConstants.ScientificJournalsCategoryB, journals, TimeSpan.FromDays(1));
+            //    _cache.Set(AppConstants.ScientificJournalsCategoryB, journals, TimeSpan.FromDays(1));
+            //}
+        }
+
+        public async Task ImportScopusPublications()
+        {
+            var userId = int.Parse(_currentUserService.UserId);
+            var user = await _usersRepository.Get(userId);
+
+            if (string.IsNullOrEmpty(user.IeeeXploreAuthorName))
+            {
+                return;
+            }
+
+            var result = await _ieeeXploreApi.GetAuthorArticlesAsync(user.IeeeXploreAuthorName);
+
+            var scopusType = await _publicationTypeRepository.Get(e => e.Value == AppConstants.ScopusPublicationType);
+
+            var publications =
+                _mapper.Map<IEnumerable<IeeeXploreArticle>, IEnumerable<CreatePublicationDto>>(result.Articles,
+                    opt => opt.Items[AppConstants.ScopusTypeId] = scopusType.Id);
+
+            foreach (var publication in publications)
+            {
+                await CreatePublication(publication);
             }
         }
 
@@ -185,12 +209,12 @@ namespace Reporting.BBL.Services
 
             if (type.Value == AppConstants.CategoryBPublicationType)
             {
-                var journals = await GetScientificJournalsCategoryB();
+                //var journals = await GetScientificJournalsCategoryB();
 
-                if (!journals.Contains(dto.PublicationTitle))
-                {
-                    return "Дане видавництво категорії Б не знайдено";
-                }
+                //if (!journals.Contains(dto.PublicationTitle))
+                //{
+                //    return "Дане видавництво категорії Б не знайдено";
+                //}
             }
 
             return null;

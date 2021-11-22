@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Reporting.BBL.Interfaces;
+using Reporting.Common.Dtos;
 
 namespace Reporting.API.Controllers
 {
@@ -9,10 +10,12 @@ namespace Reporting.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUsersService _usersService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUsersService usersService, ICurrentUserService currentUserService)
         {
             _usersService = usersService;
+            _currentUserService = currentUserService;
         }
 
         [HttpGet("Roles")]
@@ -37,6 +40,14 @@ namespace Reporting.API.Controllers
             var departments = await _usersService.GetDepartments(facultyValue);
 
             return Ok(departments);
+        }
+
+        [HttpPut("Users/{id}/IeeeXploreAuthorName")]
+        public async Task<ActionResult> UpdateUserIeeeXploreAuthorName(int id, [FromBody] ValueDto<string> dto)
+        {
+            await _usersService.UpdateUserIeeeXploreAuthorName(id, dto.Value);
+
+            return Ok();
         }
     }
 }

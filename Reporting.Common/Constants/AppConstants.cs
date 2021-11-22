@@ -17,5 +17,8 @@
         public const string ScientificJournalsCategoryB = "ScientificJournalsCategoryB";
 
         public const int CategoryBPublicationType = 5;
+        public const int ScopusPublicationType = 8;
+
+        public const string ScopusTypeId = "ScopusTypeId";
     }
 }

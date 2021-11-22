@@ -12,5 +12,8 @@ namespace Reporting.BBL.ApiInterfaces
         [Get("search/articles")]
         Task<ScopusSearchResult> GetArticlesAsync([Query("article_number")] string articleNumber,
             [Query("article_title")] string title);
+
+        [Get("search/articles")]
+        Task<ScopusSearchResult> GetAuthorArticlesAsync([Query("author")] string authorName);
     }
 }
