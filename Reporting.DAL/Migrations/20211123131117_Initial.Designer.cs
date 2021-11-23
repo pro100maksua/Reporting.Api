@@ -10,7 +10,7 @@ using Reporting.DAL.EF;
 namespace Reporting.DAL.Migrations
 {
     [DbContext(typeof(ReportingDbContext))]
-    [Migration("20211121151544_Initial")]
+    [Migration("20211123131117_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -159,6 +159,9 @@ namespace Reporting.DAL.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("EndPage")
+                        .HasColumnType("int");
+
                     b.Property<string>("HtmlUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -173,9 +176,6 @@ namespace Reporting.DAL.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
-
-                    b.Property<int>("PagesCount")
-                        .HasColumnType("int");
 
                     b.Property<string>("PdfUrl")
                         .HasMaxLength(500)
@@ -199,6 +199,9 @@ namespace Reporting.DAL.Migrations
                     b.Property<string>("ScopusAuthors")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("StartPage")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()

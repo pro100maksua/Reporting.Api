@@ -12,20 +12,20 @@ namespace Reporting.DAL.Repositories
     public class Repository<TEntity> : IRepository<TEntity>
         where TEntity : class
     {
-        private readonly ReportingDbContext _context;
-        private readonly DbSet<TEntity> _dbSet;
+        protected readonly ReportingDbContext Context;
+        protected readonly DbSet<TEntity> DbSet;
 
         public Repository(ReportingDbContext context)
         {
-            _context = context;
-            _dbSet = context.Set<TEntity>();
+            Context = context;
+            DbSet = context.Set<TEntity>();
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAll(Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string[] includeProperties = null)
         {
-            IQueryable<TEntity> query = _dbSet.AsNoTracking();
+            IQueryable<TEntity> query = DbSet.AsNoTracking();
 
             if (filter != null)
             {
@@ -50,12 +50,12 @@ namespace Reporting.DAL.Repositories
 
         public virtual ValueTask<TEntity> Get(int id)
         {
-            return _dbSet.FindAsync(id);
+            return DbSet.FindAsync(id);
         }
 
         public virtual Task<TEntity> Get(Expression<Func<TEntity, bool>> predicate, string[] includeProperties = null)
         {
-            IQueryable<TEntity> query = _dbSet;
+            IQueryable<TEntity> query = DbSet;
 
             if (includeProperties != null)
             {
@@ -70,12 +70,12 @@ namespace Reporting.DAL.Repositories
 
         public virtual async Task Add(TEntity entity)
         {
-            await _dbSet.AddAsync(entity);
+            await DbSet.AddAsync(entity);
         }
 
         public virtual Task AddRange(IEnumerable<TEntity> entities)
         {
-            return _dbSet.AddRangeAsync(entities);
+            return DbSet.AddRangeAsync(entities);
         }
 
         public virtual async Task Remove(int id)
@@ -86,31 +86,31 @@ namespace Reporting.DAL.Repositories
 
         public virtual void Remove(TEntity entity)
         {
-            if (_context.Entry(entity).State == EntityState.Detached)
+            if (Context.Entry(entity).State == EntityState.Detached)
             {
-                _dbSet.Attach(entity);
+                DbSet.Attach(entity);
             }
 
-            _dbSet.Remove(entity);
+            DbSet.Remove(entity);
         }
 
         public virtual void RemoveRange(IEnumerable<TEntity> entities)
         {
             foreach (var entity in entities)
             {
-                if (_context.Entry(entity).State == EntityState.Detached)
+                if (Context.Entry(entity).State == EntityState.Detached)
                 {
-                    _dbSet.Attach(entity);
+                    DbSet.Attach(entity);
                 }
             }
 
-            _dbSet.RemoveRange(entities);
+            DbSet.RemoveRange(entities);
         }
 
         public virtual void Update(TEntity entity)
         {
-            _dbSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            DbSet.Attach(entity);
+            Context.Entry(entity).State = EntityState.Modified;
         }
     }
 }

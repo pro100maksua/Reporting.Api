@@ -98,7 +98,8 @@ namespace Reporting.DAL.Migrations
                     Title = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     PublicationTitle = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     PublicationYear = table.Column<int>(type: "int", nullable: false),
-                    PagesCount = table.Column<int>(type: "int", nullable: false),
+                    StartPage = table.Column<int>(type: "int", nullable: false),
+                    EndPage = table.Column<int>(type: "int", nullable: false),
                     PrintedPagesCount = table.Column<double>(type: "float", nullable: false),
                     ScopusAuthors = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Doi = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
@@ -264,7 +265,8 @@ VALUES      (N'Монографія', 1),
             (N'Наукова публікація у нефаховому науковому журналі або збірнику (категорія В)', 6), 
             (N'Тези доповідей на конференціях', 7), 
             (N'Наукові публікації в міжнародній наукометричній базі даних Scopus', 8), 
-            (N'Наукові публікації в міжнародній наукометричній базі даних Web of Science', 9);
+            (N'Наукові публікації в міжнародній наукометричній базі даних Web of Science', 9),
+            (N'Наукові публікації в зарубіжних виданнях, які не входять у наукометричні бази', 10);
 
 INSERT INTO [dbo].[Faculties]
             ([Name], [Value])

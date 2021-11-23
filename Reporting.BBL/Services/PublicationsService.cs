@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
@@ -21,27 +23,29 @@ namespace Reporting.BBL.Services
         private readonly ICurrentUserService _currentUserService;
         private readonly IHtmlParserService _htmlParserService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<Publication> _publicationRepository;
+        private readonly IPublicationsRepository _publicationsRepository;
         private readonly IRepository<Conference> _conferencesRepository;
         private readonly IRepository<PublicationType> _publicationTypeRepository;
         private readonly IRepository<User> _usersRepository;
+        private readonly IReportsService _reportsService;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
 
         public PublicationsService(IIeeeXploreApi ieeeXploreApi, ICurrentUserService currentUserService, IHtmlParserService htmlParserService,
-            IUnitOfWork unitOfWork, IRepository<Publication> publicationRepository,
+            IUnitOfWork unitOfWork, IPublicationsRepository publicationsRepository,
             IRepository<Conference> conferencesRepository, IRepository<PublicationType> publicationTypeRepository,
-            IRepository<User> usersRepository, IConfiguration configuration, IMapper mapper, IMemoryCache cache)
+            IRepository<User> usersRepository, IReportsService reportsService, IConfiguration configuration, IMapper mapper, IMemoryCache cache)
         {
             _ieeeXploreApi = ieeeXploreApi;
             _currentUserService = currentUserService;
             _htmlParserService = htmlParserService;
             _unitOfWork = unitOfWork;
-            _publicationRepository = publicationRepository;
+            _publicationsRepository = publicationsRepository;
             _conferencesRepository = conferencesRepository;
             _publicationTypeRepository = publicationTypeRepository;
             _usersRepository = usersRepository;
+            _reportsService = reportsService;
             _configuration = configuration;
             _mapper = mapper;
             _cache = cache;
@@ -60,13 +64,9 @@ namespace Reporting.BBL.Services
 
         public async Task<IEnumerable<PublicationDto>> GetUserPublications(int userId)
         {
-            var user = await _usersRepository.Get(userId);
+            var publications = await _publicationsRepository.GetUserPublications(userId);
 
-            var types = await _publicationRepository.GetAll(e => e.Authors.Contains(user),
-                e => e.OrderByDescending(c => c.PublicationYear).ThenBy(c => c.Title),
-                new[] { nameof(Publication.Type), nameof(Publication.Authors) });
-
-            var dtos = _mapper.Map<IEnumerable<PublicationDto>>(types);
+            var dtos = _mapper.Map<IEnumerable<PublicationDto>>(publications);
 
             return dtos;
         }
@@ -82,7 +82,7 @@ namespace Reporting.BBL.Services
                 return response;
             }
 
-            var publication = await _publicationRepository.Get(e =>
+            var publication = await _publicationsRepository.Get(e =>
                 (dto.ArticleNumber != null && e.ArticleNumber == dto.ArticleNumber) ||
                 e.Title == dto.Title, new[] { nameof(Publication.Authors) });
 
@@ -96,7 +96,7 @@ namespace Reporting.BBL.Services
 
                 await CreateOrSetConference(publication, dto);
 
-                await _publicationRepository.Add(publication);
+                await _publicationsRepository.Add(publication);
             }
 
             var userId = int.Parse(_currentUserService.UserId);
@@ -109,7 +109,7 @@ namespace Reporting.BBL.Services
             await _unitOfWork.SaveChanges();
 
             publication =
-                await _publicationRepository.Get(p => p.Id == publication.Id, new[] { nameof(Publication.Type) });
+                await _publicationsRepository.Get(p => p.Id == publication.Id, new[] { nameof(Publication.Type) });
 
             response.Value = _mapper.Map<Publication, PublicationDto>(publication);
             return response;
@@ -126,7 +126,7 @@ namespace Reporting.BBL.Services
                 return response;
             }
 
-            var publication = await _publicationRepository.Get(id);
+            var publication = await _publicationsRepository.Get(id);
 
             if (publication == null)
             {
@@ -138,7 +138,7 @@ namespace Reporting.BBL.Services
             await _unitOfWork.SaveChanges();
 
             publication =
-                await _publicationRepository.Get(p => p.Id == publication.Id, new[] { nameof(Publication.Type) });
+                await _publicationsRepository.Get(p => p.Id == publication.Id, new[] { nameof(Publication.Type) });
 
             response.Value = _mapper.Map<Publication, PublicationDto>(publication);
             return response;
@@ -146,7 +146,7 @@ namespace Reporting.BBL.Services
 
         public async Task DeletePublication(int id)
         {
-            await _publicationRepository.Remove(id);
+            await _publicationsRepository.Remove(id);
             await _unitOfWork.SaveChanges();
         }
 
@@ -201,6 +201,27 @@ namespace Reporting.BBL.Services
             {
                 await CreatePublication(publication);
             }
+        }
+
+        public async Task<FileDto> GetUserReport3File(int userId)
+        {
+            var user = await _usersRepository.Get(e => e.Id == userId, new[] { nameof(User.Department) });
+            var publications = await _publicationsRepository.GetUserPublications(userId, DateTime.Today.Year);
+            var publicationTypes = await _publicationTypeRepository.GetAll();
+
+            var templateFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                _configuration[AppConstants.Report3FilePath]);
+
+            var pdf = _reportsService.GenerateCalibrationDispositionPdf(user, publications, publicationTypes,
+                templateFilePath);
+
+            return pdf == null
+                ? null
+                : new FileDto
+                {
+                    Bytes = pdf,
+                    ContentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                };
         }
 
         private async Task<string> ValidationPublication(CreatePublicationDto dto)

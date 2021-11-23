@@ -27,6 +27,8 @@ namespace Reporting.API
     {
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(configuration[AppConstants.SyncfusionLicenseKey]);
+
             services.AddDbContext<ReportingDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString(AppConstants.ReportingDb),
                     b => b.MigrationsAssembly(typeof(ReportingDbContext).Assembly.FullName)));
@@ -108,12 +110,16 @@ namespace Reporting.API
 
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IConferencesService, ConferencesService>();
-            services.AddTransient<IHtmlParserService, HtmlParserService>();
             services.AddTransient<IPublicationsService, PublicationsService>();
             services.AddTransient<IUsersService, UsersService>();
 
+            services.AddTransient<IHtmlParserService, HtmlParserService>();
+            services.AddTransient<IReportsService, ReportsService>();
+
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+
+            services.AddTransient<IPublicationsRepository, PublicationsRepository>();
 
             return services;
         }
