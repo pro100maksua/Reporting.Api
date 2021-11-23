@@ -6,5 +6,41 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
+    <PackageReference Include="RestEase" Version="1.5.5" />
+    <PackageReference Include="RestEase.SourceGenerator" Version="1.5.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="19.3.0.53" />
+    <PackageReference Include="Syncfusion.Pdf.Net.Core" Version="19.3.0.53" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Reporting.Common\Reporting.Common.csproj" />
+    <ProjectReference Include="..\Reposting.Domain\Reporting.Domain.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="ReportTemplates\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="ReportTemplates\3.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
 </Project>

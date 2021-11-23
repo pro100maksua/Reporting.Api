@@ -7,6 +7,12 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
+    <PackageReference Include="NReco.Logging.File" Version="1.1.2" />
+    <PackageReference Include="RestEase.HttpClientFactory" Version="1.5.5" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.10">
@@ -16,9 +22,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BBL\Reporting.BBL.csproj" />
-    <ProjectReference Include="..\Common\Reporting.Common.csproj" />
-    <ProjectReference Include="..\DAL\Reporting.DAL.csproj" />
+    <ProjectReference Include="..\Reporting.BBL\Reporting.BBL.csproj" />
+    <ProjectReference Include="..\Reporting.Common\Reporting.Common.csproj" />
+    <ProjectReference Include="..\Reporting.DAL\Reporting.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
 </Project>

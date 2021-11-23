@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Rules for Hello World project" Description="These rules focus on critical issues for the Hello World app." ToolsVersion="16.0">
+  <Localization ResourceAssembly="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.dll" ResourceBaseName="Microsoft.VisualStudio.CodeAnalysis.RuleSets.Strings.Localized">
+    <Name Resource="HelloWorldRules_Name" />
+    <Description Resource="HelloWorldRules_Description" />
+  </Localization>
+  <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1001" Action="Warning" />
+    <Rule Id="CA1009" Action="Warning" />
+    <Rule Id="CA1016" Action="Warning" />
+    <Rule Id="CA1033" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <Rule Id="CS1591" Action="None" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
+    <Rule Id="CA1802" Action="Error" />
+    <Rule Id="CA1814" Action="Info" />
+    <Rule Id="CA1823" Action="None" />
+    <Rule Id="CA2217" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1101" Action="None" />
+    <Rule Id="SA1116" Action="None" />
+    <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1633" Action="None" />
+  </Rules>
+</RuleSet>

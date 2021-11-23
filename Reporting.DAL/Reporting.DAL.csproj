@@ -8,14 +8,20 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.10" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BBL\Reporting.BBL.csproj" />
+    <ProjectReference Include="..\Reporting.BBL\Reporting.BBL.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <Folder Include="EF\Configurations\" />
-    <Folder Include="Repositories\" />
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
 </Project>

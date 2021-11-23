@@ -6,11 +6,20 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Reporting.API.Services;
+using Reporting.BBL.ApiInterfaces;
+using Reporting.BBL.Infrastructure.Mappings;
 using Reporting.BBL.Interfaces;
+using Reporting.BBL.Services;
 using Reporting.Common.Constants;
 using Reporting.DAL.EF;
+using Reporting.DAL.Repositories;
+using Reporting.Domain.Interfaces;
+using RestEase.HttpClientFactory;
 
 namespace Reporting.API
 {
@@ -18,11 +27,13 @@ namespace Reporting.API
     {
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(configuration[AppConstants.SyncfusionLicenseKey]);
+
             services.AddDbContext<ReportingDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString(AppConstants.ReportingDb),
                     b => b.MigrationsAssembly(typeof(ReportingDbContext).Assembly.FullName)));
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(typeof(MappingProfile).Assembly);
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             services.AddCors(options =>
@@ -35,7 +46,9 @@ namespace Reporting.API
                         .AllowCredentials();
                 });
             });
-            
+
+            services.AddMemoryCache();
+
             var key = Encoding.ASCII.GetBytes(configuration[AppConstants.Secret]);
 
             services.AddAuthentication(x =>
@@ -71,15 +84,44 @@ namespace Reporting.API
                     };
                 });
 
+            services.AddLogging(loggingBuilder =>
+            {
+                var loggingSection = configuration.GetSection("Logging");
+                loggingBuilder.AddFile(loggingSection);
+            });
+
             return services;
         }
 
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddRestEaseClient<IIeeeXploreApi>(configuration[AppConstants.IeeeXploreApiUrl], c =>
+                c.JsonSerializerSettings = new JsonSerializerSettings
+                {
+                    ContractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy(),
+                    },
+                });
+
+            services.AddRestEaseClient<IScientificJournalsApi>(configuration[AppConstants.ScientificJournalsApiUrl]);
+
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IConferencesService, ConferencesService>();
+            services.AddTransient<IPublicationsService, PublicationsService>();
+            services.AddTransient<IUsersService, UsersService>();
+
+            services.AddTransient<IHtmlParserService, HtmlParserService>();
+            services.AddTransient<IReportsService, ReportsService>();
+
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+
+            services.AddTransient<IPublicationsRepository, PublicationsRepository>();
 
             return services;
         }
-
     }
 }

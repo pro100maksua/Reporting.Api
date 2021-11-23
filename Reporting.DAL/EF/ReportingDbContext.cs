@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Reporting.BBL.Interfaces;
-using Reporting.DAL.Entities;
+using Reporting.Domain.Entities;
 
 namespace Reporting.DAL.EF
 {
@@ -18,7 +17,7 @@ namespace Reporting.DAL.EF
             _currentUserService = currentUserService;
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
@@ -41,7 +40,7 @@ namespace Reporting.DAL.EF
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            builder.ApplyConfigurationsFromAssembly(GetType().Assembly);
 
             base.OnModelCreating(builder);
         }

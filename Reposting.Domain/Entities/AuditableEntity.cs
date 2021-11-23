@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Reporting.DAL.Entities
+namespace Reporting.Domain.Entities
 {
     public abstract class AuditableEntity
     {

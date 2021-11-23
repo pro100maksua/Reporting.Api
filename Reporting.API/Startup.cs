@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Reporting.API.Middleware;
 
 namespace Reporting.API
 {
@@ -18,7 +19,6 @@ namespace Reporting.API
         {
             _configuration = configuration;
         }
-        
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -75,19 +75,20 @@ namespace Reporting.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
 
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
 
+            app.UseMiddleware<LoggingMiddleware>();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
-            
+
             app.UseCors();
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 
