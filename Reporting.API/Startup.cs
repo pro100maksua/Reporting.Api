@@ -71,12 +71,8 @@ namespace Reporting.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var root = (IConfigurationRoot)_configuration;
-            var debugView = root.GetDebugView();
-            logger.LogInformation(debugView);
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
