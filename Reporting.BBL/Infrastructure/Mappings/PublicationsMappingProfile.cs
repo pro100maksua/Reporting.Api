@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using AutoMapper;
 using Reporting.Common.ApiModels;
 using Reporting.Common.Constants;
@@ -21,26 +20,19 @@ namespace Reporting.BBL.Infrastructure.Mappings
                     opt => opt.MapFrom(a =>
                         string.IsNullOrEmpty(a.ScopusAuthors)
                             ? string.Join(", ", a.Authors.Select(u => $"{u.FirstName} {u.LastName}"))
-                            : a.ScopusAuthors));
-
-            CreateMap<string, PublicationAuthorDto>()
-                .ForMember(p => p.FullName, opt => opt.MapFrom(s => s));
+                            : a.ScopusAuthors))
+                .ForMember(p => p.PagesCount, opt => opt.MapFrom(a => a.EndPage - a.StartPage + 1));
 
             CreateMap<IeeeXploreArticle, PublicationDto>()
                 .ForMember(p => p.ScopusAuthors,
                     opt => opt.MapFrom(a => string.Join(", ", a.Authors.Authors.Select(u => u.FullName))))
-                .ForMember(p => p.PagesCount,
-                    opt => opt.MapFrom(a => int.Parse(a.EndPage) - int.Parse(a.StartPage) + 1));
+                .ForMember(p => p.PagesCount, opt => opt.MapFrom(a => a.EndPage - a.StartPage + 1));
 
             CreateMap<IeeeXploreArticle, CreatePublicationDto>()
                 .ForMember(p => p.ScopusAuthors,
                     opt => opt.MapFrom(a => string.Join(", ", a.Authors.Authors.Select(u => u.FullName))))
-                .ForMember(p => p.PagesCount,
-                    opt => opt.MapFrom(a => int.Parse(a.EndPage) - int.Parse(a.StartPage) + 1))
                 .ForMember(p => p.TypeId,
                     opt => opt.MapFrom((_, _, _, context) => context.Items[AppConstants.ScopusTypeId]));
-
-            CreateMap<IeeeXploreAuthor, PublicationAuthorDto>();
         }
     }
 }

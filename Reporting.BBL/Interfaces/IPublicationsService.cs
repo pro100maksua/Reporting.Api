@@ -14,5 +14,6 @@ namespace Reporting.BBL.Interfaces
         Task<PublicationDto> GetPublicationFromIeeeXplore(string articleNumber, string title);
         Task LoadScientificJournalsCategoryB();
         Task ImportScopusPublications();
+        Task<FileDto> GetUserReport3File(int userId);
     }
 }

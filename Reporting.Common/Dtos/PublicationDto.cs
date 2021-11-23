@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Reporting.Common.Dtos
+﻿namespace Reporting.Common.Dtos
 {
     public class PublicationDto
     {
@@ -20,8 +18,8 @@ namespace Reporting.Common.Dtos
         public string PublicationTitle { get; set; }
         public int PublicationYear { get; set; }
         public string ContentType { get; set; }
-        public string StartPage { get; set; }
-        public string EndPage { get; set; }
+        public int StartPage { get; set; }
+        public int EndPage { get; set; }
         public int PagesCount { get; set; }
         public double? PrintedPagesCount { get; set; }
 

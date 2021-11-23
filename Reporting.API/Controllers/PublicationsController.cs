@@ -98,5 +98,20 @@ namespace Reporting.API.Controllers
 
             return Ok();
         }
+
+        [HttpGet("UserReport3File")]
+        public async Task<ActionResult> GetUserReport3File()
+        {
+            var userId = int.Parse(_currentUserService.UserId);
+
+            var file = await _publicationsService.GetUserReport3File(userId);
+
+            if (file == null)
+            {
+                return NotFound(new { message = "Файл не знайдено." });
+            }
+
+            return File(file.Bytes, file.ContentType, file.FileName);
+        }
     }
 }

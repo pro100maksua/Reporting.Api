@@ -2,6 +2,8 @@
 {
     public class AppConstants
     {
+        public const string SyncfusionLicenseKey = "SyncfusionLicenseKey";
+
         public const string ReportingDb = "ReportingDb";
 
         public const string CorsOrigin = "CorsOrigin";
@@ -20,5 +22,7 @@
         public const int ScopusPublicationType = 8;
 
         public const string ScopusTypeId = "ScopusTypeId";
+
+        public const string Report3FilePath = "Report3FilePath";
     }
 }

@@ -13,7 +13,8 @@ namespace Reporting.Domain.Entities
         public string Title { get; set; }
         public string PublicationTitle { get; set; }
         public int PublicationYear { get; set; }
-        public int PagesCount { get; set; }
+        public int StartPage { get; set; }
+        public int EndPage { get; set; }
         public double PrintedPagesCount { get; set; }
         public string ScopusAuthors { get; set; }
         public string Doi { get; set; }

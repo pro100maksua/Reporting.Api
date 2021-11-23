@@ -18,7 +18,7 @@ namespace Reporting.Domain.Interfaces
 
         Task Add(TEntity entity);
         Task AddRange(IEnumerable<TEntity> entity);
-        
+
         Task Remove(int id);
         void Remove(TEntity entity);
         void RemoveRange(IEnumerable<TEntity> entities);
