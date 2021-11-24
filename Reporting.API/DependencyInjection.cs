@@ -111,6 +111,7 @@ namespace Reporting.API
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IConferencesService, ConferencesService>();
             services.AddTransient<IPublicationsService, PublicationsService>();
+            services.AddTransient<IStudentsWorkService, StudentsWorkService>();
             services.AddTransient<IUsersService, UsersService>();
 
             services.AddTransient<IHtmlParserService, HtmlParserService>();
@@ -120,6 +121,7 @@ namespace Reporting.API
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddTransient<IPublicationsRepository, PublicationsRepository>();
+            services.AddTransient<IStudentsWorkRepository, StudentsWorkRepository>();
 
             return services;
         }
