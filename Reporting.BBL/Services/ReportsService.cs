@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Reporting.BBL.Infrastructure;
 using Reporting.BBL.Interfaces;
+using Reporting.BBL.Models;
 using Reporting.Common.Constants;
 using Reporting.Common.Dtos;
 using Reporting.Domain.Entities;
@@ -21,6 +22,7 @@ namespace Reporting.BBL.Services
         private readonly IRepository<StudentsScientificWorkType> _studentsScientificWorkTypesRepository;
         private readonly IStudentsWorkRepository _studentsWorkRepository;
         private readonly IRepository<PublicationType> _publicationTypeRepository;
+        private readonly IConferencesRepository _conferencesRepository;
         private readonly IRepository<User> _usersRepository;
         private readonly WordHelper _wordHelper;
         private readonly IConfiguration _configuration;
@@ -30,6 +32,7 @@ namespace Reporting.BBL.Services
             IRepository<StudentsScientificWorkType> studentsScientificWorkTypesRepository,
             IStudentsWorkRepository studentsWorkRepository,
             IRepository<PublicationType> publicationTypeRepository,
+            IConferencesRepository conferencesRepository,
             IRepository<User> usersRepository,
             WordHelper wordHelper,
             IConfiguration configuration)
@@ -39,6 +42,7 @@ namespace Reporting.BBL.Services
             _studentsScientificWorkTypesRepository = studentsScientificWorkTypesRepository;
             _studentsWorkRepository = studentsWorkRepository;
             _publicationTypeRepository = publicationTypeRepository;
+            _conferencesRepository = conferencesRepository;
             _usersRepository = usersRepository;
             _wordHelper = wordHelper;
             _configuration = configuration;
@@ -98,13 +102,15 @@ namespace Reporting.BBL.Services
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report1FilePath]);
 
-            var pdf = _wordHelper.GenerateReport1(department,
+            var data = new Report1Data(department,
                 await _publicationsRepository.GetDepartmentPublications(department.Id, DateTime.Today.Year),
                 await _publicationTypeRepository.GetAll(),
+                await _conferencesRepository.GetDepartmentConferences(department.Id, DateTime.Today.Year),
                 await _studentsWorkRepository.GetStudentsWorkEntries(department.Id, DateTime.Today.Year),
                 await _studentsWorkTypesRepository.GetAll(),
-                await _studentsScientificWorkTypesRepository.GetAll(),
-                templateFilePath);
+                await _studentsScientificWorkTypesRepository.GetAll());
+
+            var pdf = _wordHelper.GenerateReport1(data, templateFilePath);
 
             return pdf;
         }

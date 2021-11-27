@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Reporting.BBL.Models;
 using Reporting.Common.Constants;
 using Reporting.Domain.Entities;
 using Syncfusion.DocIO;
@@ -11,13 +12,7 @@ namespace Reporting.BBL.Infrastructure
 {
     public class WordHelper
     {
-        public byte[] GenerateReport1(Department department,
-            IEnumerable<Publication> publications,
-            IEnumerable<PublicationType> publicationTypes,
-            IEnumerable<StudentsWorkEntry> studentsWorkEntries,
-            IEnumerable<StudentsWorkType> studentsWorkTypes,
-            IEnumerable<StudentsScientificWorkType> scientificWorkTypes,
-            string templateFilePath)
+        public byte[] GenerateReport1(Report1Data data, string templateFilePath)
         {
             return GenerateDocument(templateFilePath,
                 document =>
@@ -28,17 +23,18 @@ namespace Reporting.BBL.Infrastructure
                         DateTime.Today.Year.ToString(),
 
                         // skip first word
-                        department.Name[(department.Name.Split()[0].Length + 1)..],
+                        data.Department.Name[(data.Department.Name.Split()[0].Length + 1)..],
                     };
 
                     document.MailMerge.ClearFields = false;
                     document.MailMerge.Execute(fields, values);
 
-                    var (publicationsKeys, publicationsValues) = GetReport1PublicationsData(publications, publicationTypes);
+                    var (publicationsKeys, publicationsValues) =
+                        GetReport1PublicationsData(data.Publications, data.PublicationTypes, data.Conferences);
                     document.MailMerge.Execute(publicationsKeys, publicationsValues);
 
                     var (studentsWorkKeys, studentsWorkValues) =
-                        GetReport1StudentsWorkData(studentsWorkEntries, studentsWorkTypes, scientificWorkTypes);
+                        GetReport1StudentsWorkData(data.StudentsWorkEntries, data.StudentsWorkTypes, data.ScientificWorkTypes);
 
                     document.MailMerge.ClearFields = true;
                     document.MailMerge.Execute(studentsWorkKeys, studentsWorkValues);
@@ -123,9 +119,10 @@ namespace Reporting.BBL.Infrastructure
             return documentStream.ToArray();
         }
 
-        private (string[] keys, string[] values) GetReport1PublicationsData(
+        private (string[] Keys, string[] Values) GetReport1PublicationsData(
             IEnumerable<Publication> publications,
-            IEnumerable<PublicationType> publicationTypes)
+            IEnumerable<PublicationType> publicationTypes,
+            IEnumerable<Conference> conferences)
         {
             var keys = new List<string>();
             var values = new List<string>();
@@ -168,10 +165,30 @@ namespace Reporting.BBL.Infrastructure
             values.AddRange(publicationTypes.Select(t =>
                 GetPublicationsValue(publications.Where(e => e.Type.Value == t.Value).ToList())));
 
+            keys.Add("Publications.ScopusCitingCount");
+            values.Add(publications
+                .Where(e => e.Type.Value == PublicationsConstants.ScopusPublicationType)
+                .Sum(e => e.CitingPaperCount).ToString());
+
+            keys.Add("Publications.WebOfScienceCitingCount");
+            values.Add(publications
+                .Where(e => e.Type.Value == PublicationsConstants.WebOfSciencePublicationType)
+                .Sum(e => e.CitingPaperCount).ToString());
+
+            keys.Add("Conferences.ParticipantsCount");
+            values.Add(conferences
+                .SelectMany(e => e.Publications)
+                .SelectMany(e => e.Authors)
+                .Distinct()
+                .Count().ToString());
+
+            keys.Add("Conferences.PublicationsCount");
+            values.Add($"{conferences.Count()}/{conferences.SelectMany(e => e.Publications).Count()}");
+
             return (keys.ToArray(), values.ToArray());
         }
 
-        private (string[] keys, string[] values) GetReport1StudentsWorkData(
+        private (string[] Keys, string[] Values) GetReport1StudentsWorkData(
             IEnumerable<StudentsWorkEntry> studentsWorkEntries,
             IEnumerable<StudentsWorkType> studentsWorkTypes,
             IEnumerable<StudentsScientificWorkType> scientificWorkTypes)
