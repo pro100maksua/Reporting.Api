@@ -32,7 +32,7 @@ namespace Reporting.BBL.Infrastructure.Mappings
                 .ForMember(p => p.ScopusAuthors,
                     opt => opt.MapFrom(a => string.Join(", ", a.Authors.Authors.Select(u => u.FullName))))
                 .ForMember(p => p.TypeId,
-                    opt => opt.MapFrom((_, _, _, context) => context.Items[AppConstants.ScopusTypeId]));
+                    opt => opt.MapFrom((_, _, _, context) => context.Items[PublicationsConstants.ScopusTypeId]));
         }
     }
 }

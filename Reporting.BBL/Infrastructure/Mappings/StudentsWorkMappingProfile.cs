@@ -27,7 +27,7 @@ namespace Reporting.BBL.Infrastructure.Mappings
 
             switch (entry.Type.Value)
             {
-                case AppConstants.ParticipationInScientificWork:
+                case StudentsWorkConstants.Type1:
                 {
                     name += entry.ScientificWorkType.Name;
 
@@ -39,17 +39,17 @@ namespace Reporting.BBL.Infrastructure.Mappings
                     break;
                 }
 
-                case AppConstants.ParticipationInCompetitions:
-                case AppConstants.ReceivedAwardsForTheResultsOfTheSecondRound:
-                case AppConstants.ParticipationInCompetitionsOfScientificWorksReceivedAwards:
-                case AppConstants.ParticipationInCompetitionsOfDiplomaAndMastersReceivedAwards:
+                case StudentsWorkConstants.Type2:
+                case StudentsWorkConstants.Type3:
+                case StudentsWorkConstants.Type5:
+                case StudentsWorkConstants.Type6:
                 {
                     name += $"{entry.Name} - {entry.Group} - {entry.Specialty} - {entry.Place} місце";
 
                     break;
                 }
 
-                case AppConstants.PublishedArticleAbstracts:
+                case StudentsWorkConstants.Type7:
                 {
                     if (entry.Independently)
                     {
