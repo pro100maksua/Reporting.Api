@@ -27,15 +27,20 @@ namespace Reporting.BBL.Services
         private readonly IRepository<Conference> _conferencesRepository;
         private readonly IRepository<PublicationType> _publicationTypeRepository;
         private readonly IRepository<User> _usersRepository;
-        private readonly IReportsService _reportsService;
-        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
 
-        public PublicationsService(IIeeeXploreApi ieeeXploreApi, ICurrentUserService currentUserService, IHtmlParserService htmlParserService,
-            IUnitOfWork unitOfWork, IPublicationsRepository publicationsRepository,
-            IRepository<Conference> conferencesRepository, IRepository<PublicationType> publicationTypeRepository,
-            IRepository<User> usersRepository, IReportsService reportsService, IConfiguration configuration, IMapper mapper, IMemoryCache cache)
+        public PublicationsService(IIeeeXploreApi ieeeXploreApi,
+            ICurrentUserService currentUserService,
+            IHtmlParserService htmlParserService,
+            IUnitOfWork unitOfWork,
+            IPublicationsRepository publicationsRepository,
+            IRepository<Conference> conferencesRepository,
+            IRepository<PublicationType> publicationTypeRepository,
+            IRepository<User> usersRepository,
+            IConfiguration configuration,
+            IMapper mapper,
+            IMemoryCache cache)
         {
             _ieeeXploreApi = ieeeXploreApi;
             _currentUserService = currentUserService;
@@ -45,8 +50,6 @@ namespace Reporting.BBL.Services
             _conferencesRepository = conferencesRepository;
             _publicationTypeRepository = publicationTypeRepository;
             _usersRepository = usersRepository;
-            _reportsService = reportsService;
-            _configuration = configuration;
             _mapper = mapper;
             _cache = cache;
 
@@ -65,6 +68,17 @@ namespace Reporting.BBL.Services
         public async Task<IEnumerable<PublicationDto>> GetUserPublications(int userId)
         {
             var publications = await _publicationsRepository.GetUserPublications(userId);
+
+            var dtos = _mapper.Map<IEnumerable<PublicationDto>>(publications);
+
+            return dtos;
+        }
+
+        public async Task<IEnumerable<PublicationDto>> GetDepartmentPublications(int userId)
+        {
+            var user = await _usersRepository.Get(userId);
+
+            var publications = await _publicationsRepository.GetDepartmentPublications(user.DepartmentId);
 
             var dtos = _mapper.Map<IEnumerable<PublicationDto>>(publications);
 
@@ -191,11 +205,11 @@ namespace Reporting.BBL.Services
 
             var result = await _ieeeXploreApi.GetAuthorArticlesAsync(user.IeeeXploreAuthorName);
 
-            var scopusType = await _publicationTypeRepository.Get(e => e.Value == AppConstants.ScopusPublicationType);
+            var scopusType = await _publicationTypeRepository.Get(e => e.Value == PublicationsConstants.ScopusPublicationType);
 
             var publications =
                 _mapper.Map<IEnumerable<IeeeXploreArticle>, IEnumerable<CreatePublicationDto>>(result.Articles,
-                    opt => opt.Items[AppConstants.ScopusTypeId] = scopusType.Id);
+                    opt => opt.Items[PublicationsConstants.ScopusTypeId] = scopusType.Id);
 
             foreach (var publication in publications)
             {
@@ -203,32 +217,11 @@ namespace Reporting.BBL.Services
             }
         }
 
-        public async Task<FileDto> GetUserReport3File(int userId)
-        {
-            var user = await _usersRepository.Get(e => e.Id == userId, new[] { nameof(User.Department) });
-            var publications = await _publicationsRepository.GetUserPublications(userId, DateTime.Today.Year);
-            var publicationTypes = await _publicationTypeRepository.GetAll();
-
-            var templateFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                _configuration[AppConstants.Report3FilePath]);
-
-            var pdf = _reportsService.GenerateCalibrationDispositionPdf(user, publications, publicationTypes,
-                templateFilePath);
-
-            return pdf == null
-                ? null
-                : new FileDto
-                {
-                    Bytes = pdf,
-                    ContentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                };
-        }
-
         private async Task<string> ValidationPublication(CreatePublicationDto dto)
         {
             var type = await _publicationTypeRepository.Get(dto.TypeId);
 
-            if (type.Value == AppConstants.CategoryBPublicationType)
+            if (type.Value == PublicationsConstants.CategoryBPublicationType)
             {
                 //var journals = await GetScientificJournalsCategoryB();
 
@@ -243,11 +236,11 @@ namespace Reporting.BBL.Services
 
         private async Task<IEnumerable<string>> GetScientificJournalsCategoryB()
         {
-            if (!_cache.TryGetValue(AppConstants.ScientificJournalsCategoryB, out IEnumerable<string> cachedJournals))
+            if (!_cache.TryGetValue(PublicationsConstants.ScientificJournalsCategoryB, out IEnumerable<string> cachedJournals))
             {
                 cachedJournals = await _htmlParserService.GetScientificJournalsCategoryB();
 
-                _cache.Set(AppConstants.ScientificJournalsCategoryB, cachedJournals, TimeSpan.FromDays(1));
+                _cache.Set(PublicationsConstants.ScientificJournalsCategoryB, cachedJournals, TimeSpan.FromDays(1));
             }
 
             return cachedJournals;
@@ -260,7 +253,7 @@ namespace Reporting.BBL.Services
 
         private async Task CreateOrSetConference(Publication publication, CreatePublicationDto dto)
         {
-            if (dto.ContentType == AppConstants.Conferences)
+            if (dto.ContentType == PublicationsConstants.Conferences)
             {
                 var conference = await _conferencesRepository.Get(e => e.Number == dto.PublicationNumber);
                 if (conference != null)

@@ -27,5 +27,19 @@ namespace Reporting.DAL.Repositories
 
             return publications;
         }
+
+        public async Task<IEnumerable<Publication>> GetDepartmentPublications(int departmentId, int? publicationYear = default)
+        {
+            var publications = await DbSet.AsNoTracking()
+                .Include(e => e.Type)
+                .Include(e => e.Authors)
+                .Where(e => e.Authors.Any(a => a.DepartmentId == departmentId))
+                .Where(e => publicationYear == default || e.PublicationYear == publicationYear)
+                .OrderByDescending(c => c.PublicationYear)
+                .ThenBy(c => c.Title)
+                .ToListAsync();
+
+            return publications;
+        }
     }
 }

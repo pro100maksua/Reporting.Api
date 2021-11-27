@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Reporting.API.Services;
 using Reporting.BBL.ApiInterfaces;
+using Reporting.BBL.Infrastructure;
 using Reporting.BBL.Infrastructure.Mappings;
 using Reporting.BBL.Interfaces;
 using Reporting.BBL.Services;
@@ -111,11 +112,12 @@ namespace Reporting.API
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IConferencesService, ConferencesService>();
             services.AddTransient<IPublicationsService, PublicationsService>();
+            services.AddTransient<IReportsService, ReportsService>();
             services.AddTransient<IStudentsWorkService, StudentsWorkService>();
             services.AddTransient<IUsersService, UsersService>();
 
             services.AddTransient<IHtmlParserService, HtmlParserService>();
-            services.AddTransient<IReportsService, ReportsService>();
+            services.AddTransient<WordHelper>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));

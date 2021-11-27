@@ -26,8 +26,12 @@ namespace Reporting.BBL.Services
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public AuthService(ICurrentUserService currentUserService, IUnitOfWork unitOfWork, IRepository<Role> rolesRepository,
-            IRepository<User> usersRepository, IConfiguration configuration, IMapper mapper)
+        public AuthService(ICurrentUserService currentUserService,
+            IUnitOfWork unitOfWork,
+            IRepository<Role> rolesRepository,
+            IRepository<User> usersRepository,
+            IConfiguration configuration,
+            IMapper mapper)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
