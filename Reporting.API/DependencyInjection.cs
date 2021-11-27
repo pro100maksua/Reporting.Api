@@ -111,6 +111,7 @@ namespace Reporting.API
 
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IConferencesService, ConferencesService>();
+            services.AddTransient<ICreativeConnectionsService, CreativeConnectionsService>();
             services.AddTransient<IPublicationsService, PublicationsService>();
             services.AddTransient<IReportsService, ReportsService>();
             services.AddTransient<IStudentsWorkService, StudentsWorkService>();

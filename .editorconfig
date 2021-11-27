@@ -15,3 +15,6 @@ dotnet_diagnostic.SA1649.severity = none
 
 # SA1200: Using directives should be placed correctly
 dotnet_diagnostic.SA1200.severity = none
+
+# SA1600: Elements should be documented
+dotnet_diagnostic.SA1600.severity = none
