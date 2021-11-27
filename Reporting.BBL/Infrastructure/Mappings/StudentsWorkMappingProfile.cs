@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Reporting.Common.Constants;
 using Reporting.Common.Dtos;
 using Reporting.Domain.Entities;
