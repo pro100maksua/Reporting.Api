@@ -24,6 +24,8 @@ namespace Reporting.BBL.Services
         private readonly IRepository<PublicationType> _publicationTypeRepository;
         private readonly IConferencesRepository _conferencesRepository;
         private readonly IRepository<User> _usersRepository;
+        private readonly ICreativeConnectionsRepository _creativeConnectionsRepository;
+        private readonly IRepository<CreativeConnectionType> _creativeConnectionTypesRepository;
         private readonly WordHelper _wordHelper;
         private readonly IConfiguration _configuration;
 
@@ -34,6 +36,8 @@ namespace Reporting.BBL.Services
             IRepository<PublicationType> publicationTypeRepository,
             IConferencesRepository conferencesRepository,
             IRepository<User> usersRepository,
+            ICreativeConnectionsRepository creativeConnectionsRepository,
+            IRepository<CreativeConnectionType> creativeConnectionTypesRepository,
             WordHelper wordHelper,
             IConfiguration configuration)
         {
@@ -44,6 +48,8 @@ namespace Reporting.BBL.Services
             _publicationTypeRepository = publicationTypeRepository;
             _conferencesRepository = conferencesRepository;
             _usersRepository = usersRepository;
+            _creativeConnectionsRepository = creativeConnectionsRepository;
+            _creativeConnectionTypesRepository = creativeConnectionTypesRepository;
             _wordHelper = wordHelper;
             _configuration = configuration;
         }
@@ -106,6 +112,8 @@ namespace Reporting.BBL.Services
                 await _publicationsRepository.GetDepartmentPublications(department.Id, DateTime.Today.Year),
                 await _publicationTypeRepository.GetAll(),
                 await _conferencesRepository.GetDepartmentConferences(department.Id, DateTime.Today.Year),
+                await _creativeConnectionsRepository.GetDepartmentCreativeConnections(department.Id),
+                await _creativeConnectionTypesRepository.GetAll(),
                 await _studentsWorkRepository.GetStudentsWorkEntries(department.Id, DateTime.Today.Year),
                 await _studentsWorkTypesRepository.GetAll(),
                 await _studentsScientificWorkTypesRepository.GetAll());

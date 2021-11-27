@@ -17,7 +17,7 @@ namespace Reporting.DAL.Repositories
 
         public async Task<IEnumerable<CreativeConnection>> GetDepartmentCreativeConnections(int departmentId, int? year = default)
         {
-            var entries = await DbSet.AsNoTracking()
+            var connections = await DbSet.AsNoTracking()
                 .Include(e => e.Type)
                 .Where(e => e.DepartmentId == departmentId)
                 .Where(e => year == default || e.Created.Year == year)
@@ -26,7 +26,7 @@ namespace Reporting.DAL.Repositories
                 .ThenBy(c => c.Name)
                 .ToListAsync();
 
-            return entries;
+            return connections;
         }
     }
 }
