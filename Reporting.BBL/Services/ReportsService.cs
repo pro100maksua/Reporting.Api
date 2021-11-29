@@ -17,39 +17,27 @@ namespace Reporting.BBL.Services
 {
     public class ReportsService : IReportsService
     {
+        private readonly ISimpleRepository _repository;
         private readonly IPublicationsRepository _publicationsRepository;
-        private readonly IRepository<StudentsWorkType> _studentsWorkTypesRepository;
-        private readonly IRepository<StudentsScientificWorkType> _studentsScientificWorkTypesRepository;
         private readonly IStudentsWorkRepository _studentsWorkRepository;
-        private readonly IRepository<PublicationType> _publicationTypeRepository;
         private readonly IConferencesRepository _conferencesRepository;
-        private readonly IRepository<User> _usersRepository;
         private readonly ICreativeConnectionsRepository _creativeConnectionsRepository;
-        private readonly IRepository<CreativeConnectionType> _creativeConnectionTypesRepository;
         private readonly WordHelper _wordHelper;
         private readonly IConfiguration _configuration;
 
-        public ReportsService(IPublicationsRepository publicationsRepository,
-            IRepository<StudentsWorkType> studentsWorkTypesRepository,
-            IRepository<StudentsScientificWorkType> studentsScientificWorkTypesRepository,
+        public ReportsService(ISimpleRepository repository,
+            IPublicationsRepository publicationsRepository,
             IStudentsWorkRepository studentsWorkRepository,
-            IRepository<PublicationType> publicationTypeRepository,
             IConferencesRepository conferencesRepository,
-            IRepository<User> usersRepository,
             ICreativeConnectionsRepository creativeConnectionsRepository,
-            IRepository<CreativeConnectionType> creativeConnectionTypesRepository,
             WordHelper wordHelper,
             IConfiguration configuration)
         {
+            _repository = repository;
             _publicationsRepository = publicationsRepository;
-            _studentsWorkTypesRepository = studentsWorkTypesRepository;
-            _studentsScientificWorkTypesRepository = studentsScientificWorkTypesRepository;
             _studentsWorkRepository = studentsWorkRepository;
-            _publicationTypeRepository = publicationTypeRepository;
             _conferencesRepository = conferencesRepository;
-            _usersRepository = usersRepository;
             _creativeConnectionsRepository = creativeConnectionsRepository;
-            _creativeConnectionTypesRepository = creativeConnectionTypesRepository;
             _wordHelper = wordHelper;
             _configuration = configuration;
         }
@@ -64,7 +52,7 @@ namespace Reporting.BBL.Services
                 { ReportsConstants.Report3, GenerateDepartmentReport3 },
             };
 
-            var user = await _usersRepository.Get(e => e.Id == userId, new[] { nameof(User.Department) });
+            var user = await _repository.Get<User>(e => e.Id == userId, new[] { nameof(User.Department) });
 
             foreach (var value in reportValues)
             {
@@ -85,9 +73,9 @@ namespace Reporting.BBL.Services
 
         public async Task<FileDto> GetUserReport3File(int userId)
         {
-            var user = await _usersRepository.Get(e => e.Id == userId, new[] { nameof(User.Department) });
+            var user = await _repository.Get<User>(e => e.Id == userId, new[] { nameof(User.Department) });
             var publications = await _publicationsRepository.GetUserPublications(userId, DateTime.Today.Year);
-            var publicationTypes = await _publicationTypeRepository.GetAll();
+            var publicationTypes = await _repository.GetAll<PublicationType>();
 
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report3FilePath]);
@@ -110,13 +98,13 @@ namespace Reporting.BBL.Services
 
             var data = new Report1Data(department,
                 await _publicationsRepository.GetDepartmentPublications(department.Id, DateTime.Today.Year),
-                await _publicationTypeRepository.GetAll(),
+                await _repository.GetAll<PublicationType>(),
                 await _conferencesRepository.GetDepartmentConferences(department.Id, DateTime.Today.Year),
                 await _creativeConnectionsRepository.GetDepartmentCreativeConnections(department.Id),
-                await _creativeConnectionTypesRepository.GetAll(),
+                await _repository.GetAll<CreativeConnectionType>(),
                 await _studentsWorkRepository.GetStudentsWorkEntries(department.Id, DateTime.Today.Year),
-                await _studentsWorkTypesRepository.GetAll(),
-                await _studentsScientificWorkTypesRepository.GetAll());
+                await _repository.GetAll<StudentsWorkType>(),
+                await _repository.GetAll<StudentsScientificWorkType>());
 
             var pdf = _wordHelper.GenerateReport1(data, templateFilePath);
 
@@ -127,7 +115,7 @@ namespace Reporting.BBL.Services
         {
             var publications =
                 await _publicationsRepository.GetDepartmentPublications(department.Id, DateTime.Today.Year);
-            var publicationTypes = await _publicationTypeRepository.GetAll();
+            var publicationTypes = await _repository.GetAll<PublicationType>();
 
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report3FilePath]);

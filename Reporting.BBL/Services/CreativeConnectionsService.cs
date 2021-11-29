@@ -13,28 +13,25 @@ namespace Reporting.BBL.Services
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICreativeConnectionsRepository _creativeConnectionsRepository;
-        private readonly IRepository<User> _usersRepository;
-        private readonly IRepository<CreativeConnectionType> _creativeConnectionTypesRepository;
+        private readonly ISimpleRepository _repository;
         private readonly IMapper _mapper;
 
         public CreativeConnectionsService(ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork,
             ICreativeConnectionsRepository creativeConnectionsRepository,
-            IRepository<User> usersRepository,
-            IRepository<CreativeConnectionType> creativeConnectionTypesRepository,
+            ISimpleRepository repository,
             IMapper mapper)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _creativeConnectionsRepository = creativeConnectionsRepository;
-            _usersRepository = usersRepository;
-            _creativeConnectionTypesRepository = creativeConnectionTypesRepository;
+            _repository = repository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<ComboboxItemDto>> GetCreativeConnectionTypes()
         {
-            var types = await _creativeConnectionTypesRepository.GetAll();
+            var types = await _repository.GetAll<CreativeConnectionType>();
 
             var dtos = _mapper.Map<IEnumerable<ComboboxItemDto>>(types);
 
@@ -44,7 +41,7 @@ namespace Reporting.BBL.Services
         public async Task<IEnumerable<CreativeConnectionDto>> GetDepartmentCreativeConnections()
         {
             var userId = int.Parse(_currentUserService.UserId);
-            var user = await _usersRepository.Get(userId);
+            var user = await _repository.Get<User>(userId);
 
             var entries = await _creativeConnectionsRepository.GetDepartmentCreativeConnections(user.DepartmentId);
 
@@ -56,7 +53,7 @@ namespace Reporting.BBL.Services
         public async Task CreateCreativeConnection(CreateCreativeConnectionDto dto)
         {
             var userId = int.Parse(_currentUserService.UserId);
-            var user = await _usersRepository.Get(userId);
+            var user = await _repository.Get<User>(userId);
 
             var entry = _mapper.Map<CreateCreativeConnectionDto, CreativeConnection>(dto);
             entry.DepartmentId = user.DepartmentId;
