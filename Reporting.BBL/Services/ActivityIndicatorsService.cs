@@ -41,28 +41,52 @@ namespace Reporting.BBL.Services
             return dtos;
         }
 
+        public async Task<ActivityIndicatorDto> GetDepartmentActivityIndicator(int year)
+        {
+            var userId = int.Parse(_currentUserService.UserId);
+            var user = await _repository.Get<User>(userId);
+
+            var activityIndicator = await _activityIndicatorsRepository.Get(e =>
+                e.DepartmentId == user.DepartmentId && e.Year == year);
+
+            var dtos = _mapper.Map<ActivityIndicatorDto>(activityIndicator);
+
+            return dtos;
+        }
+
         public async Task CreateActivityIndicator(CreateActivityIndicatorDto dto)
         {
             var userId = int.Parse(_currentUserService.UserId);
             var user = await _repository.Get<User>(userId);
 
-            var entry = _mapper.Map<CreateActivityIndicatorDto, ActivityIndicator>(dto);
-            entry.DepartmentId = user.DepartmentId;
+            var activityIndicator = await _activityIndicatorsRepository.Get(e =>
+                e.DepartmentId == user.DepartmentId && e.Year == dto.Year);
 
-            await _activityIndicatorsRepository.Add(entry);
+            if (activityIndicator != null)
+            {
+                UpdateActivityIndicator(activityIndicator, dto);
+            }
+            else
+            {
+                activityIndicator = _mapper.Map<CreateActivityIndicatorDto, ActivityIndicator>(dto);
+                activityIndicator.DepartmentId = user.DepartmentId;
+
+                await _activityIndicatorsRepository.Add(activityIndicator);
+            }
+
             await _unitOfWork.SaveChanges();
         }
 
         public async Task UpdateActivityIndicator(int id, CreateActivityIndicatorDto dto)
         {
-            var entry = await _activityIndicatorsRepository.Get(id);
+            var activityIndicator = await _activityIndicatorsRepository.Get(id);
 
-            if (entry == null)
+            if (activityIndicator == null)
             {
                 return;
             }
 
-            _mapper.Map(dto, entry);
+            UpdateActivityIndicator(activityIndicator, dto);
 
             await _unitOfWork.SaveChanges();
         }
@@ -71,6 +95,11 @@ namespace Reporting.BBL.Services
         {
             await _activityIndicatorsRepository.Remove(id);
             await _unitOfWork.SaveChanges();
+        }
+
+        private void UpdateActivityIndicator(ActivityIndicator activityIndicator, CreateActivityIndicatorDto dto)
+        {
+            _mapper.Map(dto, activityIndicator);
         }
     }
 }

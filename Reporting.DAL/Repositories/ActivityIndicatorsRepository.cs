@@ -15,15 +15,14 @@ namespace Reporting.DAL.Repositories
         {
         }
 
-        public async Task<IEnumerable<ActivityIndicator>> GetDepartmentActivityIndicators(int departmentId, int? year = default)
+        public async Task<IEnumerable<ActivityIndicator>> GetDepartmentActivityIndicators(int departmentId)
         {
-            var connections = await DbSet.AsNoTracking()
+            var activityIndicators = await DbSet.AsNoTracking()
                 .Where(e => e.DepartmentId == departmentId)
-                .Where(e => year == default || e.Year == year)
                 .OrderByDescending(c => c.Year)
                 .ToListAsync();
 
-            return connections;
+            return activityIndicators;
         }
     }
 }

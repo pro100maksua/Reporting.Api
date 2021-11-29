@@ -21,9 +21,17 @@ namespace Reporting.API.Controllers
         [HttpGet("ActivityIndicators")]
         public async Task<ActionResult> GetActivityIndicators()
         {
-            var ActivityIndicators = await _activityIndicatorsService.GetDepartmentActivityIndicators();
+            var activityIndicators = await _activityIndicatorsService.GetDepartmentActivityIndicators();
 
-            return Ok(ActivityIndicators);
+            return Ok(activityIndicators);
+        }
+
+        [HttpGet("ActivityIndicator")]
+        public async Task<ActionResult> GetActivityIndicator([FromQuery] int year)
+        {
+            var activityIndicator = await _activityIndicatorsService.GetDepartmentActivityIndicator(year);
+
+            return Ok(activityIndicator);
         }
 
         [HttpPost("ActivityIndicators")]
