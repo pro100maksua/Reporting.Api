@@ -21,22 +21,19 @@ namespace Reporting.BBL.Services
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<Role> _rolesRepository;
-        private readonly IRepository<User> _usersRepository;
+        private readonly ISimpleRepository _repository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
         public AuthService(ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork,
-            IRepository<Role> rolesRepository,
-            IRepository<User> usersRepository,
+            ISimpleRepository repository,
             IConfiguration configuration,
             IMapper mapper)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
-            _rolesRepository = rolesRepository;
-            _usersRepository = usersRepository;
+            _repository = repository;
             _configuration = configuration;
             _mapper = mapper;
         }
@@ -44,7 +41,7 @@ namespace Reporting.BBL.Services
         public async Task<string> Login(LoginDto dto)
         {
             var passwordHash = CryptoHelper.GetMd5Hash(dto.Password);
-            var user = await _usersRepository.Get(e => e.Email == dto.Email, new[] { nameof(User.Roles) });
+            var user = await _repository.Get<User>(e => e.Email == dto.Email, new[] { nameof(User.Roles) });
 
             if (user == null || user.Password != passwordHash)
             {
@@ -69,10 +66,10 @@ namespace Reporting.BBL.Services
 
             user.Password = CryptoHelper.GetMd5Hash(dto.Password);
 
-            var role = await _rolesRepository.Get(dto.RoleId);
+            var role = await _repository.Get<Role>(dto.RoleId);
             user.Roles.Add(role);
 
-            await _usersRepository.Add(user);
+            await _repository.Add<User>(user);
             await _unitOfWork.SaveChanges();
 
             response.Value = GenerateToken(user);
@@ -99,7 +96,7 @@ namespace Reporting.BBL.Services
                 return response;
             }
 
-            var user = await _usersRepository.Get(e => e.Id == id, new[] { nameof(User.Roles) });
+            var user = await _repository.Get<User>(e => e.Id == id, new[] { nameof(User.Roles) });
 
             _mapper.Map(dto, user);
 
@@ -113,7 +110,7 @@ namespace Reporting.BBL.Services
                 user.Roles.Remove(item);
             }
 
-            var role = await _rolesRepository.Get(dto.RoleId);
+            var role = await _repository.Get<Role>(dto.RoleId);
             user.Roles.Add(role);
 
             await _unitOfWork.SaveChanges();
@@ -125,7 +122,7 @@ namespace Reporting.BBL.Services
         public async Task<UserDto> GetLoggedInUser()
         {
             var id = int.Parse(_currentUserService.UserId);
-            var user = await _usersRepository.Get(e => e.Id == id, new[] { nameof(User.Roles) });
+            var user = await _repository.Get<User>(e => e.Id == id, new[] { nameof(User.Roles) });
 
             return _mapper.Map<UserDto>(user);
         }
@@ -156,7 +153,7 @@ namespace Reporting.BBL.Services
 
         private async Task<string> ValidateUserEmail(string email, int? id = null)
         {
-            var users = await _usersRepository.GetAll();
+            var users = await _repository.GetAll<User>();
 
             if (users.Any(e => e.Id != id && string.Equals(e.Email, email, StringComparison.OrdinalIgnoreCase)))
             {

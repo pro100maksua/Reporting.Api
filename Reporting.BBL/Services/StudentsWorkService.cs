@@ -13,31 +13,25 @@ namespace Reporting.BBL.Services
         private readonly ICurrentUserService _currentUserService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IStudentsWorkRepository _studentsWorkRepository;
-        private readonly IRepository<User> _usersRepository;
-        private readonly IRepository<StudentsWorkType> _studentsWorkTypesRepository;
-        private readonly IRepository<StudentsScientificWorkType> _studentsScientificWorkTypesRepository;
+        private readonly ISimpleRepository _repository;
         private readonly IMapper _mapper;
 
         public StudentsWorkService(ICurrentUserService currentUserService,
             IUnitOfWork unitOfWork,
             IStudentsWorkRepository studentsWorkRepository,
-            IRepository<User> usersRepository,
-            IRepository<StudentsWorkType> studentsWorkTypesRepository,
-            IRepository<StudentsScientificWorkType> studentsScientificWorkTypesRepository,
+            ISimpleRepository repository,
             IMapper mapper)
         {
             _currentUserService = currentUserService;
             _unitOfWork = unitOfWork;
             _studentsWorkRepository = studentsWorkRepository;
-            _usersRepository = usersRepository;
-            _studentsWorkTypesRepository = studentsWorkTypesRepository;
-            _studentsScientificWorkTypesRepository = studentsScientificWorkTypesRepository;
+            _repository = repository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<ComboboxItemDto>> GetStudentsWorkTypes()
         {
-            var types = await _studentsWorkTypesRepository.GetAll();
+            var types = await _repository.GetAll<StudentsWorkType>();
 
             var dtos = _mapper.Map<IEnumerable<ComboboxItemDto>>(types);
 
@@ -46,7 +40,7 @@ namespace Reporting.BBL.Services
 
         public async Task<IEnumerable<ComboboxItemDto>> GetStudentsScientificWorkTypes()
         {
-            var types = await _studentsScientificWorkTypesRepository.GetAll();
+            var types = await _repository.GetAll<StudentsScientificWorkType>();
 
             var dtos = _mapper.Map<IEnumerable<ComboboxItemDto>>(types);
 
@@ -56,7 +50,7 @@ namespace Reporting.BBL.Services
         public async Task<IEnumerable<StudentsWorkEntryDto>> GetStudentsWorkEntries()
         {
             var userId = int.Parse(_currentUserService.UserId);
-            var user = await _usersRepository.Get(userId);
+            var user = await _repository.Get<User>(userId);
 
             var entries = await _studentsWorkRepository.GetStudentsWorkEntries(user.DepartmentId);
 

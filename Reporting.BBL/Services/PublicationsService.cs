@@ -22,9 +22,7 @@ namespace Reporting.BBL.Services
         private readonly IHtmlParserService _htmlParserService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPublicationsRepository _publicationsRepository;
-        private readonly IRepository<Conference> _conferencesRepository;
-        private readonly IRepository<PublicationType> _publicationTypeRepository;
-        private readonly IRepository<User> _usersRepository;
+        private readonly ISimpleRepository _repository;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
 
@@ -33,9 +31,7 @@ namespace Reporting.BBL.Services
             IHtmlParserService htmlParserService,
             IUnitOfWork unitOfWork,
             IPublicationsRepository publicationsRepository,
-            IRepository<Conference> conferencesRepository,
-            IRepository<PublicationType> publicationTypeRepository,
-            IRepository<User> usersRepository,
+            ISimpleRepository repository,
             IConfiguration configuration,
             IMapper mapper,
             IMemoryCache cache)
@@ -45,9 +41,7 @@ namespace Reporting.BBL.Services
             _htmlParserService = htmlParserService;
             _unitOfWork = unitOfWork;
             _publicationsRepository = publicationsRepository;
-            _conferencesRepository = conferencesRepository;
-            _publicationTypeRepository = publicationTypeRepository;
-            _usersRepository = usersRepository;
+            _repository = repository;
             _mapper = mapper;
             _cache = cache;
 
@@ -56,7 +50,7 @@ namespace Reporting.BBL.Services
 
         public async Task<IEnumerable<ComboboxItemDto>> GetPublicationTypes()
         {
-            var types = await _publicationTypeRepository.GetAll();
+            var types = await _repository.GetAll<PublicationType>();
 
             var dtos = _mapper.Map<IEnumerable<ComboboxItemDto>>(types);
 
@@ -74,7 +68,7 @@ namespace Reporting.BBL.Services
 
         public async Task<IEnumerable<PublicationDto>> GetDepartmentPublications(int userId)
         {
-            var user = await _usersRepository.Get(userId);
+            var user = await _repository.Get<User>(userId);
 
             var publications = await _publicationsRepository.GetDepartmentPublications(user.DepartmentId);
 
@@ -114,7 +108,7 @@ namespace Reporting.BBL.Services
             var userId = int.Parse(_currentUserService.UserId);
             if (publication.Authors.All(e => e.Id != userId))
             {
-                var author = await _usersRepository.Get(userId);
+                var author = await _repository.Get<User>(userId);
                 publication.Authors.Add(author);
             }
 
@@ -194,7 +188,7 @@ namespace Reporting.BBL.Services
         public async Task ImportScopusPublications()
         {
             var userId = int.Parse(_currentUserService.UserId);
-            var user = await _usersRepository.Get(userId);
+            var user = await _repository.Get<User>(userId);
 
             if (string.IsNullOrEmpty(user.IeeeXploreAuthorName))
             {
@@ -203,7 +197,7 @@ namespace Reporting.BBL.Services
 
             var result = await _ieeeXploreApi.GetAuthorArticlesAsync(user.IeeeXploreAuthorName);
 
-            var scopusType = await _publicationTypeRepository.Get(e => e.Value == PublicationsConstants.ScopusPublicationType);
+            var scopusType = await _repository.Get<PublicationType>(e => e.Value == PublicationsConstants.ScopusPublicationType);
 
             var publications =
                 _mapper.Map<IEnumerable<IeeeXploreArticle>, IEnumerable<CreatePublicationDto>>(result.Articles,
@@ -217,7 +211,7 @@ namespace Reporting.BBL.Services
 
         private async Task<string> ValidationPublication(CreatePublicationDto dto)
         {
-            var type = await _publicationTypeRepository.Get(dto.TypeId);
+            var type = await _repository.Get<PublicationType>(dto.TypeId);
 
             if (type.Value == PublicationsConstants.CategoryBPublicationType)
             {
@@ -253,7 +247,7 @@ namespace Reporting.BBL.Services
         {
             if (dto.ContentType == PublicationsConstants.Conferences)
             {
-                var conference = await _conferencesRepository.Get(e => e.Number == dto.PublicationNumber);
+                var conference = await _repository.Get<Conference>(e => e.Number == dto.PublicationNumber);
                 if (conference != null)
                 {
                     publication.ConferenceId = conference.Id;

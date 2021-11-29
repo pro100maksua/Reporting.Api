@@ -109,6 +109,7 @@ namespace Reporting.API
 
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
+            services.AddTransient<IActivityIndicatorsService, ActivityIndicatorsService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IConferencesService, ConferencesService>();
             services.AddTransient<ICreativeConnectionsService, CreativeConnectionsService>();
@@ -121,8 +122,10 @@ namespace Reporting.API
             services.AddTransient<WordHelper>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<ISimpleRepository, SimpleRepository>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
+            services.AddTransient<IActivityIndicatorsRepository, ActivityIndicatorsRepository>();
             services.AddTransient<IConferencesRepository, ConferencesRepository>();
             services.AddTransient<ICreativeConnectionsRepository, CreativeConnectionsRepository>();
             services.AddTransient<IPublicationsRepository, PublicationsRepository>();

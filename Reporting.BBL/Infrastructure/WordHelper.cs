@@ -29,56 +29,60 @@ namespace Reporting.BBL.Infrastructure
                     document.MailMerge.ClearFields = false;
                     document.MailMerge.Execute(fields, values);
 
-                    var (publicationsKeys, publicationsValues) =
-                        GetReport1PublicationsData(data.Publications, data.PublicationTypes, data.Conferences);
-                    document.MailMerge.Execute(publicationsKeys, publicationsValues);
+                    SetReport1PublicationsData(document, data.Publications, data.PublicationTypes, data.Conferences);
 
-                    var (studentsWorkKeys, studentsWorkValues) =
-                        GetReport1StudentsWorkData(data.StudentsWorkEntries, data.StudentsWorkTypes, data.ScientificWorkTypes);
+                    SetReport1CreativeConnectionsData(document, data.CreativeConnections, data.CreativeConnectionTypes);
 
                     document.MailMerge.ClearFields = true;
-                    document.MailMerge.Execute(studentsWorkKeys, studentsWorkValues);
+
+                    SetReport1StudentsWorkData(document,
+                        data.StudentsWorkEntries,
+                        data.StudentsWorkTypes,
+                        data.ScientificWorkTypes);
                 });
         }
 
-        public byte[] GenerateReport3(Department department, IEnumerable<Publication> publications,
-           IEnumerable<PublicationType> publicationTypes, string templateFilePath)
+        public byte[] GenerateReport3(Department department,
+            IEnumerable<Publication> publications,
+            IEnumerable<PublicationType> publicationTypes,
+            string templateFilePath)
         {
-            return GenerateDocument(templateFilePath, document =>
-            {
-                foreach (var type in publicationTypes)
+            return GenerateDocument(templateFilePath,
+                document =>
                 {
-                    var data = publications.Where(p => p.TypeId == type.Id).Select((p, i) => new
+                    foreach (var type in publicationTypes)
                     {
-                        Number = i + 1,
-                        Authors = string.IsNullOrEmpty(p.ScopusAuthors)
-                            ? string.Join(", ", p.Authors.Select(u => $"{u.FirstName} {u.LastName}"))
-                            : p.ScopusAuthors,
-                        p.Title,
-                        p.PublicationTitle,
-                        Link = p.HtmlUrl,
-                        p.PublicationYear,
-                        Pages = $"{p.StartPage}-{p.EndPage}",
-                        PagesCount = p.EndPage - p.StartPage + 1,
-                        p.PrintedPagesCount,
-                    }).ToList();
+                        var data = publications.Where(p => p.TypeId == type.Id).Select((p, i) => new
+                        {
+                            Number = i + 1,
+                            Authors = string.IsNullOrEmpty(p.ScopusAuthors)
+                                ? string.Join(", ", p.Authors.Select(u => $"{u.FirstName} {u.LastName}"))
+                                : p.ScopusAuthors,
+                            p.Title,
+                            p.PublicationTitle,
+                            Link = p.HtmlUrl,
+                            p.PublicationYear,
+                            Pages = $"{p.StartPage}-{p.EndPage}",
+                            PagesCount = p.EndPage - p.StartPage + 1,
+                            p.PrintedPagesCount,
+                        }).ToList();
 
-                    var dataTable = new MailMergeDataTable(type.Value.ToString(), data);
+                        var dataTable = new MailMergeDataTable(type.Value.ToString(), data);
 
-                    document.MailMerge.ExecuteGroup(dataTable);
-                }
+                        document.MailMerge.ExecuteGroup(dataTable);
+                    }
 
-                var fields = new[] { "Year", "Department" };
-                var values = new[]
-                {
-                    DateTime.Today.Year.ToString(),
+                    var fields = new[] { "Year", "Department" };
+                    var values = new[]
+                    {
+                        DateTime.Today.Year.ToString(),
 
-                    // skip first word
-                    department.Name[(department.Name.Split()[0].Length + 1)..],
-                };
+                        // skip first word
+                        department.Name[(department.Name.Split()[0].Length + 1)..],
+                    };
 
-                document.MailMerge.Execute(fields, values);
-            });
+                    document.MailMerge.Execute(fields, values);
+                });
         }
 
         public byte[] MergeDocuments(IEnumerable<byte[]> reports)
@@ -106,7 +110,8 @@ namespace Reporting.BBL.Infrastructure
 
         private byte[] GenerateDocument(string templateFilePath, Action<WordDocument> action)
         {
-            using var fileStreamPath = new FileStream(templateFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var fileStreamPath =
+                new FileStream(templateFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             using var document = new WordDocument(fileStreamPath, FormatType.Automatic);
 
             action(document);
@@ -119,7 +124,7 @@ namespace Reporting.BBL.Infrastructure
             return documentStream.ToArray();
         }
 
-        private (string[] Keys, string[] Values) GetReport1PublicationsData(
+        private void SetReport1PublicationsData(IWordDocument document,
             IEnumerable<Publication> publications,
             IEnumerable<PublicationType> publicationTypes,
             IEnumerable<Conference> conferences)
@@ -185,10 +190,34 @@ namespace Reporting.BBL.Infrastructure
             keys.Add("Conferences.PublicationsCount");
             values.Add($"{conferences.Count()}/{conferences.SelectMany(e => e.Publications).Count()}");
 
-            return (keys.ToArray(), values.ToArray());
+            document.MailMerge.Execute(keys.ToArray(), values.ToArray());
         }
 
-        private (string[] Keys, string[] Values) GetReport1StudentsWorkData(
+        private void SetReport1CreativeConnectionsData(
+            IWordDocument document,
+            IEnumerable<CreativeConnection> creativeConnections,
+            IEnumerable<CreativeConnectionType> creativeConnectionTypes)
+        {
+            var keys = new List<string>();
+            var values = new List<string>();
+
+            foreach (var type in creativeConnectionTypes)
+            {
+                var connections = creativeConnections.Where(p => p.TypeId == type.Id).ToList();
+
+                keys.Add($"CreativeConnections.{type.Value}.Total");
+                values.Add(connections.Count.ToString());
+
+                var dataTable = new MailMergeDataTable($"CreativeConnections.{type.Value}", connections);
+
+                document.MailMerge.ExecuteGroup(dataTable);
+            }
+
+            document.MailMerge.Execute(keys.ToArray(), values.ToArray());
+        }
+
+        private void SetReport1StudentsWorkData(
+            IWordDocument document,
             IEnumerable<StudentsWorkEntry> studentsWorkEntries,
             IEnumerable<StudentsWorkType> studentsWorkTypes,
             IEnumerable<StudentsScientificWorkType> scientificWorkTypes)
@@ -222,7 +251,7 @@ namespace Reporting.BBL.Infrastructure
             values.Add(studentsWorkEntries
                 .Count(e => e.Type.Value == StudentsWorkConstants.Type7 && e.Independently).ToString());
 
-            return (keys.ToArray(), values.ToArray());
+            document.MailMerge.Execute(keys.ToArray(), values.ToArray());
         }
 
         private string GetPublicationsValue(IEnumerable<Publication> publications)

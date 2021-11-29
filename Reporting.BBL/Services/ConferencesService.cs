@@ -12,20 +12,19 @@ namespace Reporting.BBL.Services
     public class ConferencesService : IConferencesService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<Conference> _conferencesRepository;
+        private readonly ISimpleRepository _repository;
         private readonly IMapper _mapper;
 
-        public ConferencesService(IUnitOfWork unitOfWork, IRepository<Conference> conferencesRepository, IMapper mapper)
+        public ConferencesService(IUnitOfWork unitOfWork, ISimpleRepository repository, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
-            _conferencesRepository = conferencesRepository;
+            _repository = repository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<ConferenceDto>> GetConferences()
         {
-            var conferences =
-                await _conferencesRepository.GetAll(orderBy: e =>
+            var conferences = await _repository.GetAll<Conference>(orderBy: e =>
                     e.OrderByDescending(c => c.Year).ThenBy(c => c.Title));
 
             var dtos = _mapper.Map<IEnumerable<ConferenceDto>>(conferences);
@@ -37,17 +36,17 @@ namespace Reporting.BBL.Services
         {
             var conference = _mapper.Map<CreateConferenceDto, Conference>(dto);
 
-            await _conferencesRepository.Add(conference);
+            await _repository.Add(conference);
             await _unitOfWork.SaveChanges();
 
-            conference = await _conferencesRepository.Get(conference.Id);
+            conference = await _repository.Get<Conference>(conference.Id);
 
             return _mapper.Map<Conference, ConferenceDto>(conference);
         }
 
         public async Task<ConferenceDto> UpdateConference(int id, CreateConferenceDto dto)
         {
-            var conference = await _conferencesRepository.Get(id);
+            var conference = await _repository.Get<Conference>(id);
 
             if (conference == null)
             {
@@ -58,14 +57,14 @@ namespace Reporting.BBL.Services
 
             await _unitOfWork.SaveChanges();
 
-            conference = await _conferencesRepository.Get(conference.Id);
+            conference = await _repository.Get<Conference>(conference.Id);
 
             return _mapper.Map<Conference, ConferenceDto>(conference);
         }
 
         public async Task DeleteConference(int id)
         {
-            await _conferencesRepository.Remove(id);
+            await _repository.Remove<Conference>(id);
             await _unitOfWork.SaveChanges();
         }
     }
