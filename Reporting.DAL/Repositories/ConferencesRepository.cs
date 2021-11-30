@@ -20,6 +20,7 @@ namespace Reporting.DAL.Repositories
                 .ThenInclude(e => e.Authors)
                 .Where(e => e.Publications.Any(p => p.Authors.Any(a => a.DepartmentId == departmentId)))
                 .Where(e => year == default || e.Year == year)
+                .AsSplitQuery()
                 .ToListAsync();
 
             return conferences;
