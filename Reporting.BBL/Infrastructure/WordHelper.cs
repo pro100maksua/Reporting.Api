@@ -29,6 +29,8 @@ namespace Reporting.BBL.Infrastructure
                     document.MailMerge.ClearFields = false;
                     document.MailMerge.Execute(fields, values);
 
+                    SetReport1ActivityIndicatorsData(document, data.ActivityIndicator);
+
                     SetReport1PublicationsData(document, data.Publications, data.PublicationTypes, data.Conferences);
 
                     SetReport1CreativeConnectionsData(document, data.CreativeConnections, data.CreativeConnectionTypes);
@@ -122,6 +124,21 @@ namespace Reporting.BBL.Infrastructure
             document.Close();
 
             return documentStream.ToArray();
+        }
+
+        private void SetReport1ActivityIndicatorsData(IWordDocument document, ActivityIndicator activityIndicator)
+        {
+            if (activityIndicator == null)
+            {
+                return;
+            }
+
+            var props = activityIndicator.GetType().GetProperties();
+
+            var keys = props.Select(p => $"ActivityIndicator.{p.Name}");
+            var values = props.Select(p => p.GetValue(activityIndicator)?.ToString());
+
+            document.MailMerge.Execute(keys.ToArray(), values.ToArray());
         }
 
         private void SetReport1PublicationsData(IWordDocument document,
