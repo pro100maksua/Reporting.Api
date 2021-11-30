@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Reporting.API.Services;
 using Reporting.BBL.ApiInterfaces;
+using Reporting.BBL.Infrastructure;
 using Reporting.BBL.Infrastructure.Mappings;
 using Reporting.BBL.Interfaces;
 using Reporting.BBL.Services;
@@ -108,18 +109,27 @@ namespace Reporting.API
 
             services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
+            services.AddTransient<IActivityIndicatorsService, ActivityIndicatorsService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IConferencesService, ConferencesService>();
+            services.AddTransient<ICreativeConnectionsService, CreativeConnectionsService>();
             services.AddTransient<IPublicationsService, PublicationsService>();
+            services.AddTransient<IReportsService, ReportsService>();
+            services.AddTransient<IStudentsWorkService, StudentsWorkService>();
             services.AddTransient<IUsersService, UsersService>();
 
             services.AddTransient<IHtmlParserService, HtmlParserService>();
-            services.AddTransient<IReportsService, ReportsService>();
+            services.AddTransient<WordHelper>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<ISimpleRepository, SimpleRepository>();
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
+            services.AddTransient<IActivityIndicatorsRepository, ActivityIndicatorsRepository>();
+            services.AddTransient<IConferencesRepository, ConferencesRepository>();
+            services.AddTransient<ICreativeConnectionsRepository, CreativeConnectionsRepository>();
             services.AddTransient<IPublicationsRepository, PublicationsRepository>();
+            services.AddTransient<IStudentsWorkRepository, StudentsWorkRepository>();
 
             return services;
         }

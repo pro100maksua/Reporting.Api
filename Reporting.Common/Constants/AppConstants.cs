@@ -14,15 +14,5 @@
         public const string IeeeXploreApiKey = "IeeeXploreApiKey";
 
         public const string ScientificJournalsApiUrl = "ScientificJournalsApiUrl";
-
-        public const string Conferences = "Conferences";
-        public const string ScientificJournalsCategoryB = "ScientificJournalsCategoryB";
-
-        public const int CategoryBPublicationType = 5;
-        public const int ScopusPublicationType = 8;
-
-        public const string ScopusTypeId = "ScopusTypeId";
-
-        public const string Report3FilePath = "Report3FilePath";
     }
 }

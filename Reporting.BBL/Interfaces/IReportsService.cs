@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using Reporting.Domain.Entities;
+﻿using System.Threading.Tasks;
+using Reporting.Common.Dtos;
 
 namespace Reporting.BBL.Interfaces
 {
     public interface IReportsService
     {
-        byte[] GenerateCalibrationDispositionPdf(User user, IEnumerable<Publication> publications,
-            IEnumerable<PublicationType> publicationTypes, string templateFilePath);
+        Task<FileDto> DownloadDepartmentReports(int userId, int[] reportValues);
+        Task<FileDto> GetUserReport3File(int userId);
     }
 }

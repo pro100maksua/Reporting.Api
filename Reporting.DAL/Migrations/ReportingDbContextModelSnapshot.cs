@@ -34,6 +34,133 @@ namespace Reporting.DAL.Migrations
                     b.ToTable("UserPublications");
                 });
 
+            modelBuilder.Entity("Reporting.Domain.Entities.ActivityIndicator", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ApplicationsForSecurityDocumentsCount")
+                        .HasColumnType("int");
+
+                    b.Property<double>("AtExpenseOfCustomersFinancing")
+                        .HasColumnType("float");
+
+                    b.Property<int>("AtExpenseOfCustomersNumberOfWorks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompletedWorksCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ConferencesSeminarsRoundTablesCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("DefendedCandidateDissertationsCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DefendedDoctoralDissertationsCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DevelopmentResultsInLearningProcessCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DevelopmentResultsInProductionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DoctoralStudentsCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FullTimeCandidatesOfScienceWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FullTimeDoctorOfScienceWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FullTimeNoDegreeWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FullTimeWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GraduateStudentsCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GraduateStudentsWithBreakFromProductionCount")
+                        .HasColumnType("int");
+
+                    b.Property<double>("InternationalFundsFinancing")
+                        .HasColumnType("float");
+
+                    b.Property<int>("InternationalFundsNumberOfWorks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InventorsCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("PartTimeCandidatesOfScienceWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PartTimeDoctorOfScienceWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PartTimeNoDegreeWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PartTimeWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceivedSecurityDocumentsCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScientificActivityCandidatesOfScienceWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScientificActivityDoctorOfScienceWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScientificActivityNoDegreeWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScientificActivityWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScientificPedagogicalWorkersCount")
+                        .HasColumnType("int");
+
+                    b.Property<double>("StateBudgetFundFinancing")
+                        .HasColumnType("float");
+
+                    b.Property<int>("StateBudgetFundNumberOfWorks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("ActivityIndicator");
+                });
+
             modelBuilder.Entity("Reporting.Domain.Entities.Conference", b =>
                 {
                     b.Property<int>("Id")
@@ -74,6 +201,71 @@ namespace Reporting.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Conferences");
+                });
+
+            modelBuilder.Entity("Reporting.Domain.Entities.CreativeConnection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("CreativeConnections");
+                });
+
+            modelBuilder.Entity("Reporting.Domain.Entities.CreativeConnectionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CreativeConnectionTypes");
                 });
 
             modelBuilder.Entity("Reporting.Domain.Entities.Department", b =>
@@ -258,6 +450,109 @@ namespace Reporting.DAL.Migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("Reporting.Domain.Entities.StudentsScientificWorkType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StudentsScientificWorkTypes");
+                });
+
+            modelBuilder.Entity("Reporting.Domain.Entities.StudentsWorkEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Group")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("Independently")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("Place")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ScientificWorkName")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("ScientificWorkTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Specialty")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScientificWorkTypeId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("StudentsWorkEntries");
+                });
+
+            modelBuilder.Entity("Reporting.Domain.Entities.StudentsWorkType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StudentsWorkTypes");
+                });
+
             modelBuilder.Entity("Reporting.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -346,6 +641,36 @@ namespace Reporting.DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Reporting.Domain.Entities.ActivityIndicator", b =>
+                {
+                    b.HasOne("Reporting.Domain.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("Reporting.Domain.Entities.CreativeConnection", b =>
+                {
+                    b.HasOne("Reporting.Domain.Entities.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Reporting.Domain.Entities.CreativeConnectionType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Type");
+                });
+
             modelBuilder.Entity("Reporting.Domain.Entities.Department", b =>
                 {
                     b.HasOne("Reporting.Domain.Entities.Faculty", "Faculty")
@@ -371,6 +696,32 @@ namespace Reporting.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Conference");
+
+                    b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("Reporting.Domain.Entities.StudentsWorkEntry", b =>
+                {
+                    b.HasOne("Reporting.Domain.Entities.StudentsScientificWorkType", "ScientificWorkType")
+                        .WithMany()
+                        .HasForeignKey("ScientificWorkTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Reporting.Domain.Entities.User", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Reporting.Domain.Entities.StudentsWorkType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ScientificWorkType");
+
+                    b.Navigation("Teacher");
 
                     b.Navigation("Type");
                 });

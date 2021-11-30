@@ -38,6 +38,16 @@ namespace Reporting.API.Controllers
             return Ok(publications);
         }
 
+        [HttpGet("DepartmentPublications")]
+        public async Task<ActionResult> GetDepartmentPublications()
+        {
+            var userId = int.Parse(_currentUserService.UserId);
+
+            var publications = await _publicationsService.GetDepartmentPublications(userId);
+
+            return Ok(publications);
+        }
+
         [HttpPost("Publications")]
         public async Task<ActionResult> CreatePublication([FromBody] CreatePublicationDto dto)
         {
@@ -97,21 +107,6 @@ namespace Reporting.API.Controllers
             await _publicationsService.ImportScopusPublications();
 
             return Ok();
-        }
-
-        [HttpGet("UserReport3File")]
-        public async Task<ActionResult> GetUserReport3File()
-        {
-            var userId = int.Parse(_currentUserService.UserId);
-
-            var file = await _publicationsService.GetUserReport3File(userId);
-
-            if (file == null)
-            {
-                return NotFound(new { message = "Файл не знайдено." });
-            }
-
-            return File(file.Bytes, file.ContentType, file.FileName);
         }
     }
 }
