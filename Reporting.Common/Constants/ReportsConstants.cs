@@ -5,6 +5,7 @@
         public const string DocxContentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
         public const string Report1FilePath = "Report1FilePath";
+        public const string Report2FilePath = "Report2FilePath";
         public const string Report3FilePath = "Report3FilePath";
 
         public const int Report1 = 1;
