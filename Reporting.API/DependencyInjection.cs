@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,8 +32,13 @@ namespace Reporting.API
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(configuration[AppConstants.SyncfusionLicenseKey]);
 
             services.AddDbContext<ReportingDbContext>(options =>
+            {
                 options.UseSqlServer(configuration.GetConnectionString(AppConstants.ReportingDb),
-                    b => b.MigrationsAssembly(typeof(ReportingDbContext).Assembly.FullName)));
+                    b => b.MigrationsAssembly(typeof(ReportingDbContext).Assembly.FullName));
+
+                options.ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning));
+                options.EnableSensitiveDataLogging();
+            });
 
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
