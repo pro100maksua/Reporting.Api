@@ -2,7 +2,7 @@
 
 namespace Reporting.BBL.Infrastructure.Mappings
 {
-    public class MappingProfile : Profile
+    public abstract class MappingProfile : Profile
     {
     }
 }

@@ -5,7 +5,7 @@ using Reporting.Domain.Entities;
 
 namespace Reporting.BBL.Infrastructure.Mappings
 {
-    public class StudentsWorkMappingProfile : Profile
+    public class StudentsWorkMappingProfile : MappingProfile
     {
         public StudentsWorkMappingProfile()
         {

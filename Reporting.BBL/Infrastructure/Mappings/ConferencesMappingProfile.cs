@@ -4,7 +4,7 @@ using Reporting.Domain.Entities;
 
 namespace Reporting.BBL.Infrastructure.Mappings
 {
-    public class ConferencesMappingProfile : Profile
+    public class ConferencesMappingProfile : MappingProfile
     {
         public ConferencesMappingProfile()
         {
