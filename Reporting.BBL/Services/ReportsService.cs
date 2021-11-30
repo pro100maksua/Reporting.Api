@@ -18,6 +18,7 @@ namespace Reporting.BBL.Services
     public class ReportsService : IReportsService
     {
         private readonly ISimpleRepository _repository;
+        private readonly IActivityIndicatorsRepository _activityIndicatorsRepository;
         private readonly IPublicationsRepository _publicationsRepository;
         private readonly IStudentsWorkRepository _studentsWorkRepository;
         private readonly IConferencesRepository _conferencesRepository;
@@ -26,6 +27,7 @@ namespace Reporting.BBL.Services
         private readonly IConfiguration _configuration;
 
         public ReportsService(ISimpleRepository repository,
+            IActivityIndicatorsRepository activityIndicatorsRepository,
             IPublicationsRepository publicationsRepository,
             IStudentsWorkRepository studentsWorkRepository,
             IConferencesRepository conferencesRepository,
@@ -34,6 +36,7 @@ namespace Reporting.BBL.Services
             IConfiguration configuration)
         {
             _repository = repository;
+            _activityIndicatorsRepository = activityIndicatorsRepository;
             _publicationsRepository = publicationsRepository;
             _studentsWorkRepository = studentsWorkRepository;
             _conferencesRepository = conferencesRepository;
@@ -97,6 +100,7 @@ namespace Reporting.BBL.Services
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report1FilePath]);
 
             var data = new Report1Data(department,
+                await _activityIndicatorsRepository.Get(e => e.DepartmentId == department.Id && e.Year == DateTime.Today.Year),
                 await _publicationsRepository.GetDepartmentPublications(department.Id, DateTime.Today.Year),
                 await _repository.GetAll<PublicationType>(),
                 await _conferencesRepository.GetDepartmentConferences(department.Id, DateTime.Today.Year),
