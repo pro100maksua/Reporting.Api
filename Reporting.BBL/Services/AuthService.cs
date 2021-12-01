@@ -135,7 +135,7 @@ namespace Reporting.BBL.Services
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                new(ClaimTypes.Name, user.Name),
             };
             claims.AddRange(user.Roles.Select(e => new Claim(ClaimTypes.Role, e.Value.ToString())));
 

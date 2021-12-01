@@ -19,7 +19,7 @@ namespace Reporting.BBL.Infrastructure.Mappings
                 .ForMember(p => p.Authors,
                     opt => opt.MapFrom(a =>
                         string.IsNullOrEmpty(a.ScopusAuthors)
-                            ? string.Join(", ", a.Authors.Select(u => $"{u.FirstName} {u.LastName}"))
+                            ? string.Join(", ", a.Authors.Select(u => u.Name))
                             : a.ScopusAuthors))
                 .ForMember(p => p.PagesCount, opt => opt.MapFrom(a => a.EndPage - a.StartPage + 1));
 

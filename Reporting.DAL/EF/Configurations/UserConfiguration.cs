@@ -12,12 +12,16 @@ namespace Reporting.DAL.EF.Configurations
 
             builder.ToTable("Users");
 
-            builder.Property(e => e.FirstName).IsRequired().HasMaxLength(250);
-            builder.Property(e => e.LastName).IsRequired().HasMaxLength(250);
-            builder.Property(e => e.Email).IsRequired().HasMaxLength(250);
-            builder.Property(e => e.Password).IsRequired().HasMaxLength(250);
+            builder.Property(e => e.Name).IsRequired().HasMaxLength(500);
 
-            builder.Property(e => e.IeeeXploreAuthorName).HasMaxLength(250);
+            builder.Property(e => e.Email).IsRequired().HasMaxLength(500);
+            builder.Property(e => e.Password).IsRequired().HasMaxLength(500);
+
+            builder.Property(e => e.Degree).HasMaxLength(500);
+            builder.Property(e => e.AcademicStatus).HasMaxLength(500);
+            builder.Property(e => e.Position).HasMaxLength(500);
+
+            builder.Property(e => e.IeeeXploreAuthorName).HasMaxLength(500);
 
             builder.HasIndex(e => e.Email).IsUnique();
 
