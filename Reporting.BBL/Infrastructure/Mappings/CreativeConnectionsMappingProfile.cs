@@ -4,7 +4,7 @@ using Reporting.Domain.Entities;
 
 namespace Reporting.BBL.Infrastructure.Mappings
 {
-    public class CreativeConnectionsMappingProfile : Profile
+    public class CreativeConnectionsMappingProfile : MappingProfile
     {
         public CreativeConnectionsMappingProfile()
         {

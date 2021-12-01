@@ -4,7 +4,7 @@ using Reporting.Domain.Entities;
 
 namespace Reporting.BBL.Infrastructure.Mappings
 {
-    public class ActivityIndicatorsMappingProfile : Profile
+    public class ActivityIndicatorsMappingProfile : MappingProfile
     {
         public ActivityIndicatorsMappingProfile()
         {

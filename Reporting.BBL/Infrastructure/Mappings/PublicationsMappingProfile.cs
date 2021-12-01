@@ -7,7 +7,7 @@ using Reporting.Domain.Entities;
 
 namespace Reporting.BBL.Infrastructure.Mappings
 {
-    public class PublicationsMappingProfile : Profile
+    public class PublicationsMappingProfile : MappingProfile
     {
         public PublicationsMappingProfile()
         {
