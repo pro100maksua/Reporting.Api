@@ -138,6 +138,7 @@ namespace Reporting.API
             services.AddTransient<IDissertationsRepository, DissertationsRepository>();
             services.AddTransient<IPublicationsRepository, PublicationsRepository>();
             services.AddTransient<IStudentsWorkRepository, StudentsWorkRepository>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
 
             return services;
         }

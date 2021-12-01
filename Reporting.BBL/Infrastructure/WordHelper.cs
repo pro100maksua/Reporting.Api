@@ -75,7 +75,7 @@ namespace Reporting.BBL.Infrastructure
                         {
                             Number = i + 1,
                             Authors = string.IsNullOrEmpty(p.ScopusAuthors)
-                                ? string.Join(", ", p.Authors.Select(u => $"{u.FirstName} {u.LastName}"))
+                                ? string.Join(", ", p.Authors.Select(u => u.Name))
                                 : p.ScopusAuthors,
                             p.Title,
                             p.PublicationTitle,
@@ -90,6 +90,22 @@ namespace Reporting.BBL.Infrastructure
 
                         document.MailMerge.ExecuteGroup(dataTable);
                     }
+                });
+        }
+
+        public byte[] GenerateReport5(Department department, IEnumerable<Report5UserDto> users, string templateFilePath)
+        {
+            return GenerateDocument(templateFilePath,
+                document =>
+                {
+                    document.MailMerge.ClearFields = false;
+
+                    SetCommonData(document, department);
+
+                    var dataTable = new MailMergeDataTable("Authors", users);
+
+                    document.MailMerge.ClearFields = true;
+                    document.MailMerge.ExecuteGroup(dataTable);
                 });
         }
 

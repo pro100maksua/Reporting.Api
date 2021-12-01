@@ -7,6 +7,7 @@
         public const string Report1FilePath = "Report1FilePath";
         public const string Report2FilePath = "Report2FilePath";
         public const string Report3FilePath = "Report3FilePath";
+        public const string Report5FilePath = "Report5FilePath";
 
         public const int Report1 = 1;
         public const int Report2 = 2;
@@ -17,5 +18,7 @@
         public const int Report7 = 7;
         public const int Report8 = 8;
         public const int Report9 = 9;
+
+        public const string Users = "Users";
     }
 }

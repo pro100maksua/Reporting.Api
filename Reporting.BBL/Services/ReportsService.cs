@@ -25,6 +25,7 @@ namespace Reporting.BBL.Services
         private readonly IStudentsWorkRepository _studentsWorkRepository;
         private readonly IConferencesRepository _conferencesRepository;
         private readonly ICreativeConnectionsRepository _creativeConnectionsRepository;
+        private readonly IUsersRepository _usersRepository;
         private readonly WordHelper _wordHelper;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
@@ -36,6 +37,7 @@ namespace Reporting.BBL.Services
             IStudentsWorkRepository studentsWorkRepository,
             IConferencesRepository conferencesRepository,
             ICreativeConnectionsRepository creativeConnectionsRepository,
+            IUsersRepository usersRepository,
             WordHelper wordHelper,
             IConfiguration configuration,
             IMapper mapper)
@@ -47,6 +49,7 @@ namespace Reporting.BBL.Services
             _studentsWorkRepository = studentsWorkRepository;
             _conferencesRepository = conferencesRepository;
             _creativeConnectionsRepository = creativeConnectionsRepository;
+            _usersRepository = usersRepository;
             _wordHelper = wordHelper;
             _configuration = configuration;
             _mapper = mapper;
@@ -61,6 +64,7 @@ namespace Reporting.BBL.Services
                 { ReportsConstants.Report1, GenerateDepartmentReport1 },
                 { ReportsConstants.Report2, GenerateDepartmentReport2 },
                 { ReportsConstants.Report3, GenerateDepartmentReport3 },
+                { ReportsConstants.Report5, GenerateDepartmentReport5 },
             };
 
             var user = await _repository.Get<User>(e => e.Id == userId, new[] { nameof(User.Department) });
@@ -149,6 +153,21 @@ namespace Reporting.BBL.Services
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report3FilePath]);
 
             var pdf = _wordHelper.GenerateReport3(department, publications, publicationTypes, templateFilePath);
+
+            return pdf;
+        }
+
+        private async Task<byte[]> GenerateDepartmentReport5(Department department)
+        {
+            var users = await _usersRepository.GetDepartmentUsersWithPublications(department.Id, DateTime.Today.Year);
+
+            var dtos = _mapper.Map<IEnumerable<Report5UserDto>>(users,
+                opt => opt.Items[ReportsConstants.Users] = users);
+
+            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report5FilePath]);
+
+            var pdf = _wordHelper.GenerateReport5(department, dtos, templateFilePath);
 
             return pdf;
         }
