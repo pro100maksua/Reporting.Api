@@ -177,12 +177,12 @@ namespace Reporting.BBL.Services
 
         public async Task LoadScientificJournalsCategoryB()
         {
-            //if (!_cache.TryGetValue(AppConstants.ScientificJournalsCategoryB, out _))
-            //{
-            //    var journals = await _htmlParserService.GetScientificJournalsCategoryB();
+            if (!_cache.TryGetValue(AppConstants.ScientificJournalsCategoryB, out _))
+            {
+                var journals = await _htmlParserService.GetScientificJournalsCategoryB();
 
-            //    _cache.Set(AppConstants.ScientificJournalsCategoryB, journals, TimeSpan.FromDays(1));
-            //}
+                _cache.Set(AppConstants.ScientificJournalsCategoryB, journals, TimeSpan.FromDays(1));
+            }
         }
 
         public async Task ImportScopusPublications()
@@ -215,12 +215,12 @@ namespace Reporting.BBL.Services
 
             if (type.Value == PublicationsConstants.CategoryBPublicationType)
             {
-                //var journals = await GetScientificJournalsCategoryB();
+                var journals = await GetScientificJournalsCategoryB();
 
-                //if (!journals.Contains(dto.PublicationTitle))
-                //{
-                //    return "Дане видавництво категорії Б не знайдено";
-                //}
+                if (!journals.Contains(dto.PublicationTitle))
+                {
+                    return "Дане видавництво категорії Б не знайдено";
+                }
             }
 
             return null;
