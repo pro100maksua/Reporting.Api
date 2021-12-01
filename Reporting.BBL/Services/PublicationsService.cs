@@ -177,11 +177,11 @@ namespace Reporting.BBL.Services
 
         public async Task LoadScientificJournalsCategoryB()
         {
-            if (!_cache.TryGetValue(AppConstants.ScientificJournalsCategoryB, out _))
+            if (!_cache.TryGetValue(PublicationsConstants.ScientificJournalsCategoryB, out _))
             {
                 var journals = await _htmlParserService.GetScientificJournalsCategoryB();
 
-                _cache.Set(AppConstants.ScientificJournalsCategoryB, journals, TimeSpan.FromDays(1));
+                _cache.Set(PublicationsConstants.ScientificJournalsCategoryB, journals, TimeSpan.FromDays(1));
             }
         }
 
