@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Reporting.BBL.Models;
 using Reporting.Common.Constants;
+using Reporting.Common.Dtos;
 using Reporting.Domain.Entities;
 using Syncfusion.DocIO;
 using Syncfusion.DocIO.DLS;
@@ -17,17 +18,9 @@ namespace Reporting.BBL.Infrastructure
             return GenerateDocument(templateFilePath,
                 document =>
                 {
-                    var fields = new[] { "Year", "Department", };
-                    var values = new[]
-                    {
-                        DateTime.Today.Year.ToString(),
-
-                        // skip first word
-                        data.Department.Name[(data.Department.Name.Split()[0].Length + 1)..],
-                    };
-
                     document.MailMerge.ClearFields = false;
-                    document.MailMerge.Execute(fields, values);
+
+                    SetCommonData(document, data.Department);
 
                     SetReport1ActivityIndicatorsData(document, data.ActivityIndicator);
 
@@ -44,6 +37,24 @@ namespace Reporting.BBL.Infrastructure
                 });
         }
 
+        public byte[] GenerateReport2(Department department,
+            IEnumerable<ReportDissertationDto> dissertations,
+            string templateFilePath)
+        {
+            return GenerateDocument(templateFilePath,
+                document =>
+                {
+                    document.MailMerge.ClearFields = false;
+
+                    SetCommonData(document, department);
+
+                    var dataTable = new MailMergeDataTable("Dissertations", dissertations);
+
+                    document.MailMerge.ClearFields = true;
+                    document.MailMerge.ExecuteGroup(dataTable);
+                });
+        }
+
         public byte[] GenerateReport3(Department department,
             IEnumerable<Publication> publications,
             IEnumerable<PublicationType> publicationTypes,
@@ -52,6 +63,12 @@ namespace Reporting.BBL.Infrastructure
             return GenerateDocument(templateFilePath,
                 document =>
                 {
+                    document.MailMerge.ClearFields = false;
+
+                    SetCommonData(document, department);
+
+                    document.MailMerge.ClearFields = true;
+
                     foreach (var type in publicationTypes)
                     {
                         var data = publications.Where(p => p.TypeId == type.Id).Select((p, i) => new
@@ -73,17 +90,6 @@ namespace Reporting.BBL.Infrastructure
 
                         document.MailMerge.ExecuteGroup(dataTable);
                     }
-
-                    var fields = new[] { "Year", "Department" };
-                    var values = new[]
-                    {
-                        DateTime.Today.Year.ToString(),
-
-                        // skip first word
-                        department.Name[(department.Name.Split()[0].Length + 1)..],
-                    };
-
-                    document.MailMerge.Execute(fields, values);
                 });
         }
 
@@ -124,6 +130,20 @@ namespace Reporting.BBL.Infrastructure
             document.Close();
 
             return documentStream.ToArray();
+        }
+
+        private void SetCommonData(IWordDocument document, Department department)
+        {
+            var fields = new[] { "Year", "Department", };
+            var values = new[]
+            {
+                DateTime.Today.Year.ToString(),
+
+                // skip first word
+                department.Name[(department.Name.Split()[0].Length + 1)..],
+            };
+
+            document.MailMerge.Execute(fields, values);
         }
 
         private void SetReport1ActivityIndicatorsData(IWordDocument document, ActivityIndicator activityIndicator)
