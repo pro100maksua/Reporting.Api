@@ -9,6 +9,7 @@
         public const string Report3FilePath = "Report3FilePath";
         public const string Report4FilePath = "Report4FilePath";
         public const string Report5FilePath = "Report5FilePath";
+        public const string Report6FilePath = "Report6FilePath";
 
         public const int Report1 = 1;
         public const int Report2 = 2;
@@ -20,7 +21,10 @@
         public const int Report8 = 8;
         public const int Report9 = 9;
 
+        public const string Conferences = "Conferences";
         public const string Publications = "Publications";
         public const string Users = "Users";
+
+        public const string NumberPrefix = "NumberPrefix";
     }
 }

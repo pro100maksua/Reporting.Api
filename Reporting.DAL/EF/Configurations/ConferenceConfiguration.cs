@@ -14,9 +14,25 @@ namespace Reporting.DAL.EF.Configurations
 
             builder.Property(e => e.Title).IsRequired().HasMaxLength(500);
 
+            builder.Property(e => e.Organizers).HasMaxLength(500);
+            builder.Property(e => e.CoOrganizers).HasMaxLength(500);
+
             builder.Property(e => e.Location).HasMaxLength(500);
 
             builder.Property(e => e.Number).HasMaxLength(500);
+
+            builder.HasOne(e => e.Type)
+                .WithMany()
+                .HasForeignKey(e => e.TypeId);
+
+            builder.HasOne(e => e.SubType)
+                .WithMany()
+                .HasForeignKey(e => e.SubTypeId);
+
+            builder.HasOne(e => e.Department)
+                .WithMany()
+                .HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

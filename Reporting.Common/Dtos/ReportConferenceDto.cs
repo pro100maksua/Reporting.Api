@@ -2,11 +2,11 @@
 
 namespace Reporting.Common.Dtos
 {
-    public class ConferenceDto
+    public class ReportConferenceDto
     {
         public int Id { get; set; }
-        public string Title { get; set; }
         public string Number { get; set; }
+        public string Title { get; set; }
         public string Location { get; set; }
         public string Organizers { get; set; }
         public string CoOrganizers { get; set; }
