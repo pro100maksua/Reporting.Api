@@ -20,6 +20,7 @@
         public string PdfUrl { get; set; }
         public string HtmlUrl { get; set; }
         public string ConferenceLocation { get; set; }
+        public string ConferenceDates { get; set; }
         public int? CitingPaperCount { get; set; }
         public int? CitingPatentCount { get; set; }
     }

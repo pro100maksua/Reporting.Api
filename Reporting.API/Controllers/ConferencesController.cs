@@ -18,10 +18,26 @@ namespace Reporting.API.Controllers
             _conferencesService = conferencesService;
         }
 
-        [HttpGet("Conferences")]
-        public async Task<ActionResult> GetConferences()
+        [HttpGet("ConferenceTypes")]
+        public async Task<ActionResult> GetConferenceTypes()
         {
-            var conferences = await _conferencesService.GetConferences();
+            var types = await _conferencesService.GetConferenceTypes();
+
+            return Ok(types);
+        }
+
+        [HttpGet("ConferenceSubTypes")]
+        public async Task<ActionResult> GetConferenceSubTypes()
+        {
+            var types = await _conferencesService.GetConferenceSubTypes();
+
+            return Ok(types);
+        }
+
+        [HttpGet("Conferences")]
+        public async Task<ActionResult> GetConferences([FromQuery] int? typeValue, [FromQuery] int? subTypeValue)
+        {
+            var conferences = await _conferencesService.GetConferences(typeValue, subTypeValue);
 
             return Ok(conferences);
         }

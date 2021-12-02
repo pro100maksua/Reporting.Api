@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -88,6 +89,9 @@ namespace Reporting.BBL.Services
                 return response;
             }
 
+            var userId = int.Parse(_currentUserService.UserId);
+            var user = await _repository.Get<User>(userId);
+
             var publication = await _publicationsRepository.Get(e =>
                 (dto.ArticleNumber != null && e.ArticleNumber == dto.ArticleNumber) ||
                 e.Title == dto.Title, new[] { nameof(Publication.Authors) });
@@ -100,12 +104,11 @@ namespace Reporting.BBL.Services
             {
                 publication = _mapper.Map<CreatePublicationDto, Publication>(dto);
 
-                await CreateOrSetConference(publication, dto);
+                await CreateOrSetConference(publication, dto, user.DepartmentId);
 
                 await _publicationsRepository.Add(publication);
             }
 
-            var userId = int.Parse(_currentUserService.UserId);
             if (publication.Authors.All(e => e.Id != userId))
             {
                 var author = await _repository.Get<User>(userId);
@@ -243,7 +246,7 @@ namespace Reporting.BBL.Services
             _mapper.Map(dto, publication);
         }
 
-        private async Task CreateOrSetConference(Publication publication, CreatePublicationDto dto)
+        private async Task CreateOrSetConference(Publication publication, CreatePublicationDto dto, int departmentId)
         {
             if (dto.ContentType == PublicationsConstants.Conferences)
             {
@@ -254,13 +257,46 @@ namespace Reporting.BBL.Services
                 }
                 else
                 {
-                    publication.Conference = new Conference
+                    var type = await _repository.Get<ConferenceType>(e =>
+                        e.Value == ConferencesConstants.ForeignConferenceType);
+
+                    conference = new Conference
                     {
                         Number = dto.PublicationNumber,
                         Location = dto.ConferenceLocation,
                         Title = dto.PublicationTitle,
-                        Year = dto.PublicationYear,
+                        TypeId = type.Id,
+                        DepartmentId = departmentId,
                     };
+
+                    if (!string.IsNullOrEmpty(dto.ConferenceDates))
+                    {
+                        var datePieces = dto.ConferenceDates.Split(" ");
+
+                        var days = datePieces[0].Split("-");
+                        var month = datePieces[1][..3];
+                        var year = datePieces[2];
+
+                        if (DateTime.TryParseExact($"{days[0]} {month} {year}",
+                            "d MMM yyyy",
+                            CultureInfo.InvariantCulture,
+                            DateTimeStyles.None,
+                            out var startDate))
+                        {
+                            conference.StartDate = startDate;
+                        }
+
+                        if (DateTime.TryParseExact($"{days[1]} {month} {year}",
+                            "d MMM yyyy",
+                            CultureInfo.InvariantCulture,
+                            DateTimeStyles.None,
+                            out var endDate))
+                        {
+                            conference.EndDate = endDate;
+                        }
+                    }
+
+                    publication.Conference = conference;
                 }
             }
         }

@@ -11,15 +11,24 @@ namespace Reporting.DAL.Repositories
     public class ConferencesRepository : Repository<Conference>, IConferencesRepository
     {
         public ConferencesRepository(ReportingDbContext context)
-            : base(context) { }
+            : base(context)
+        {
+        }
 
-        public async Task<IEnumerable<Conference>> GetDepartmentConferences(int departmentId, int? year = default)
+        public async Task<IEnumerable<Conference>> GetDepartmentConferences(int departmentId,
+            int? typeValue = default,
+            int? subTypeValue = default,
+            int? year = default)
         {
             var conferences = await DbSet.AsNoTrackingWithIdentityResolution()
                 .Include(e => e.Publications)
                 .ThenInclude(e => e.Authors)
-                .Where(e => e.Publications.Any(p => p.Authors.Any(a => a.DepartmentId == departmentId)))
-                .Where(e => year == default || e.Year == year)
+                .Where(e => e.DepartmentId == departmentId)
+                .Where(e => typeValue == default || e.Type.Value == typeValue)
+                .Where(e => subTypeValue == default || e.SubType.Value == subTypeValue)
+                .Where(e => year == default || e.StartDate.Value.Year == year)
+                .OrderByDescending(e => e.StartDate.Value.Year)
+                .ThenBy(c => c.Title)
                 .AsSplitQuery()
                 .ToListAsync();
 

@@ -14,6 +14,7 @@
         public string PublicationNumber { get; set; }
         public string PublicationTitle { get; set; }
         public string ConferenceLocation { get; set; }
+        public string ConferenceDates { get; set; }
         public int PublicationYear { get; set; }
         public int StartPage { get; set; }
         public int EndPage { get; set; }

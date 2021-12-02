@@ -6,6 +6,9 @@ namespace Reporting.Domain.Interfaces
 {
     public interface IConferencesRepository : IRepository<Conference>
     {
-        Task<IEnumerable<Conference>> GetDepartmentConferences(int departmentId, int? year = default);
+        Task<IEnumerable<Conference>> GetDepartmentConferences(int departmentId,
+            int? typeValue = default,
+            int? subTypeValue = default,
+            int? year = default);
     }
 }

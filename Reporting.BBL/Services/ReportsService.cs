@@ -116,7 +116,7 @@ namespace Reporting.BBL.Services
                 await _activityIndicatorsRepository.Get(e => e.DepartmentId == department.Id && e.Year == DateTime.Today.Year),
                 await _publicationsRepository.GetDepartmentPublications(department.Id, DateTime.Today.Year),
                 await _repository.GetAll<PublicationType>(),
-                await _conferencesRepository.GetDepartmentConferences(department.Id, DateTime.Today.Year),
+                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, DateTime.Today.Year),
                 await _creativeConnectionsRepository.GetDepartmentCreativeConnections(department.Id),
                 await _repository.GetAll<CreativeConnectionType>(),
                 await _studentsWorkRepository.GetStudentsWorkEntries(department.Id, DateTime.Today.Year),
