@@ -93,6 +93,28 @@ namespace Reporting.BBL.Infrastructure
                 });
         }
 
+        public byte[] GenerateReport4(Department department,
+            IEnumerable<Report4PublicationDto> publications,
+            string templateFilePath)
+        {
+            return GenerateDocument(templateFilePath,
+                document =>
+                {
+                    document.MailMerge.ClearFields = false;
+
+                    SetCommonData(document, department);
+
+                    var dataTable = new MailMergeDataTable("Publications", publications);
+
+                    document.MailMerge.ExecuteGroup(dataTable);
+
+                    dataTable = new MailMergeDataTable("PrintedPublications", publications);
+
+                    document.MailMerge.ClearFields = true;
+                    document.MailMerge.ExecuteGroup(dataTable);
+                });
+        }
+
         public byte[] GenerateReport5(Department department, IEnumerable<Report5UserDto> users, string templateFilePath)
         {
             return GenerateDocument(templateFilePath,
