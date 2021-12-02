@@ -23,6 +23,8 @@ namespace Reporting.DAL.Repositories
             var conferences = await DbSet.AsNoTrackingWithIdentityResolution()
                 .Include(e => e.Publications)
                 .ThenInclude(e => e.Authors)
+                .Include(e => e.Type)
+                .Include(e => e.SubType)
                 .Where(e => e.DepartmentId == departmentId)
                 .Where(e => typeValue == default || e.Type.Value == typeValue)
                 .Where(e => subTypeValue == default || e.SubType.Value == subTypeValue)

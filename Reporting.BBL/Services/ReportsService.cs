@@ -66,6 +66,7 @@ namespace Reporting.BBL.Services
                 { ReportsConstants.Report3, GenerateDepartmentReport3 },
                 { ReportsConstants.Report4, GenerateDepartmentReport4 },
                 { ReportsConstants.Report5, GenerateDepartmentReport5 },
+                { ReportsConstants.Report6, GenerateDepartmentReport6 },
             };
 
             var user = await _repository.Get<User>(e => e.Id == userId, new[] { nameof(User.Department) });
@@ -184,6 +185,53 @@ namespace Reporting.BBL.Services
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report5FilePath]);
 
             var pdf = _wordHelper.GenerateReport5(department, dtos, templateFilePath);
+
+            return pdf;
+        }
+
+        private async Task<byte[]> GenerateDepartmentReport6(Department department)
+        {
+            var conferenceTypes = await _repository.GetAll<ConferenceType>();
+            var conferenceSubTypes = await _repository.GetAll<ConferenceSubType>();
+            var conferences =
+                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, DateTime.Today.Year);
+
+            var dictionary = new Dictionary<string, IEnumerable<ReportConferenceDto>>();
+
+            foreach (var type in conferenceTypes)
+            {
+                var typeConferences = conferences.Where(e => e.TypeId == type.Id).ToList();
+
+                if (type.Value == ConferencesConstants.InternalConferenceType)
+                {
+                    foreach (var subType in conferenceSubTypes)
+                    {
+                        var subTypeConferences = typeConferences.Where(e => e.SubTypeId == subType.Id).ToList();
+
+                        dictionary[$"{type.Value}.{subType.Value}"] = _mapper.Map<IEnumerable<ReportConferenceDto>>(
+                            subTypeConferences,
+                            opt =>
+                            {
+                                opt.Items[ReportsConstants.Conferences] = subTypeConferences;
+                                opt.Items[ReportsConstants.NumberPrefix] = $"{type.Value}.{subType.Value}.";
+                            });
+                    }
+                }
+                else
+                {
+                    dictionary[type.Value.ToString()] = _mapper.Map<IEnumerable<ReportConferenceDto>>(typeConferences,
+                        opt =>
+                        {
+                            opt.Items[ReportsConstants.Conferences] = typeConferences;
+                            opt.Items[ReportsConstants.NumberPrefix] = $"{type.Value}.";
+                        });
+                }
+            }
+
+            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report6FilePath]);
+
+            var pdf = _wordHelper.GenerateReport6(department, dictionary, templateFilePath);
 
             return pdf;
         }
