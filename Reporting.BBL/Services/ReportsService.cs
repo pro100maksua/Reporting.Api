@@ -64,6 +64,7 @@ namespace Reporting.BBL.Services
                 { ReportsConstants.Report1, GenerateDepartmentReport1 },
                 { ReportsConstants.Report2, GenerateDepartmentReport2 },
                 { ReportsConstants.Report3, GenerateDepartmentReport3 },
+                { ReportsConstants.Report4, GenerateDepartmentReport4 },
                 { ReportsConstants.Report5, GenerateDepartmentReport5 },
             };
 
@@ -153,6 +154,21 @@ namespace Reporting.BBL.Services
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report3FilePath]);
 
             var pdf = _wordHelper.GenerateReport3(department, publications, publicationTypes, templateFilePath);
+
+            return pdf;
+        }
+
+        private async Task<byte[]> GenerateDepartmentReport4(Department department)
+        {
+            var publications = await _publicationsRepository.GetDepartmentForeignPublications(department.Id, DateTime.Today.Year);
+
+            var dtos = _mapper.Map<IEnumerable<Report4PublicationDto>>(publications,
+                opt => opt.Items[ReportsConstants.Publications] = publications);
+
+            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report4FilePath]);
+
+            var pdf = _wordHelper.GenerateReport4(department, dtos, templateFilePath);
 
             return pdf;
         }

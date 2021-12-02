@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Reporting.Common.Constants;
 using Reporting.DAL.EF;
 using Reporting.Domain.Entities;
 using Reporting.Domain.Interfaces;
@@ -35,6 +36,28 @@ namespace Reporting.DAL.Repositories
                 .Include(e => e.Authors)
                 .Where(e => e.Authors.Any(a => a.DepartmentId == departmentId))
                 .Where(e => publicationYear == default || e.PublicationYear == publicationYear)
+                .OrderByDescending(c => c.PublicationYear)
+                .ThenBy(c => c.Title)
+                .ToListAsync();
+
+            return publications;
+        }
+
+        public async Task<IEnumerable<Publication>> GetDepartmentForeignPublications(int departmentId, int? publicationYear = default)
+        {
+            var foreignTypes = new[]
+            {
+                PublicationsConstants.ScopusPublicationType,
+                PublicationsConstants.WebOfSciencePublicationType,
+                PublicationsConstants.ForeignPublicationType,
+            };
+
+            var publications = await DbSet.AsNoTracking()
+                .Include(e => e.Type)
+                .Include(e => e.Authors)
+                .Where(e => e.Authors.Any(a => a.DepartmentId == departmentId))
+                .Where(e => publicationYear == default || e.PublicationYear == publicationYear)
+                .Where(e => foreignTypes.Contains(e.Type.Value))
                 .OrderByDescending(c => c.PublicationYear)
                 .ThenBy(c => c.Title)
                 .ToListAsync();

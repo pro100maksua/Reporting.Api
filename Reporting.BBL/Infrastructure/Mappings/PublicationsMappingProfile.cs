@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Reporting.Common.ApiModels;
 using Reporting.Common.Constants;
@@ -22,6 +23,18 @@ namespace Reporting.BBL.Infrastructure.Mappings
                             ? string.Join(", ", a.Authors.Select(u => u.Name))
                             : a.ScopusAuthors))
                 .ForMember(p => p.PagesCount, opt => opt.MapFrom(a => a.EndPage - a.StartPage + 1));
+
+            CreateMap<Publication, Report4PublicationDto>()
+                .ForMember(e => e.Number,
+                    opt => opt.MapFrom((e, _, _, c) =>
+                        ((List<Publication>)c.Items[ReportsConstants.Publications]).IndexOf(e) + 1))
+                .ForMember(p => p.Authors,
+                    opt => opt.MapFrom(a =>
+                        string.IsNullOrEmpty(a.ScopusAuthors)
+                            ? string.Join(", ", a.Authors.Select(u => u.Name))
+                            : a.ScopusAuthors))
+                .ForMember(p => p.PagesCount, opt => opt.MapFrom(a => a.EndPage - a.StartPage + 1))
+                .ForMember(p => p.Pages, opt => opt.MapFrom(p => $"{p.StartPage}-{p.EndPage}"));
 
             CreateMap<IeeeXploreArticle, PublicationDto>()
                 .ForMember(p => p.ScopusAuthors,
