@@ -152,6 +152,27 @@ namespace Reporting.BBL.Infrastructure
                 });
         }
 
+        public byte[] GenerateReport7(Department department,
+            Dictionary<string, IEnumerable<ReportConferenceDto>> fieldsDictionary,
+            string templateFilePath)
+        {
+            return GenerateDocument(templateFilePath,
+                document =>
+                {
+                    document.MailMerge.ClearFields = false;
+
+                    SetCommonData(document, department);
+
+                    document.MailMerge.ClearFields = true;
+
+                    foreach (var (field, conferences) in fieldsDictionary)
+                    {
+                        var dataTable = new MailMergeDataTable(field, conferences);
+                        document.MailMerge.ExecuteGroup(dataTable);
+                    }
+                });
+        }
+
         public byte[] MergeDocuments(IEnumerable<byte[]> reports)
         {
             using var destinationStream = new MemoryStream(reports.First());
@@ -162,7 +183,7 @@ namespace Reporting.BBL.Infrastructure
                 using var stream = new MemoryStream(report);
                 using var document = new WordDocument(stream, FormatType.Automatic);
 
-                destinationDocument.ImportContent(document, ImportOptions.UseDestinationStyles);
+                destinationDocument.ImportContent(document, ImportOptions.KeepSourceFormatting);
 
                 document.Close();
             }
