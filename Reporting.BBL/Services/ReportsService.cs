@@ -67,6 +67,7 @@ namespace Reporting.BBL.Services
                 { ReportsConstants.Report4, GenerateDepartmentReport4 },
                 { ReportsConstants.Report5, GenerateDepartmentReport5 },
                 { ReportsConstants.Report6, GenerateDepartmentReport6 },
+                { ReportsConstants.Report7, GenerateDepartmentReport7 },
             };
 
             var user = await _repository.Get<User>(e => e.Id == userId, new[] { nameof(User.Department) });
@@ -232,6 +233,41 @@ namespace Reporting.BBL.Services
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report6FilePath]);
 
             var pdf = _wordHelper.GenerateReport6(department, dictionary, templateFilePath);
+
+            return pdf;
+        }
+
+        private async Task<byte[]> GenerateDepartmentReport7(Department department)
+        {
+            var conferences =
+                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, DateTime.Today.Year);
+
+            var studentConferenceTypes = new[]
+            {
+                ConferencesConstants.ForeignStudentConferenceType,
+                ConferencesConstants.UkrainianStudentConferenceType,
+                ConferencesConstants.InternalStudentConferenceType,
+            };
+
+            var dictionary = new Dictionary<string, IEnumerable<ReportConferenceDto>>();
+
+            foreach (var (i, typeValue) in studentConferenceTypes.Select((e, i) => (i, e)))
+            {
+                var typeConferences = conferences.Where(e => e.Type.Value == typeValue).ToList();
+                var field = (i + 1).ToString();
+
+                dictionary[field] = _mapper.Map<IEnumerable<ReportConferenceDto>>(typeConferences,
+                    opt =>
+                    {
+                        opt.Items[ReportsConstants.Conferences] = typeConferences;
+                        opt.Items[ReportsConstants.NumberPrefix] = $"{field}.";
+                    });
+            }
+
+            var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report7FilePath]);
+
+            var pdf = _wordHelper.GenerateReport7(department, dictionary, templateFilePath);
 
             return pdf;
         }
