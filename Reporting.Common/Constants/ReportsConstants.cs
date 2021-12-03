@@ -10,6 +10,9 @@
         public const string Report4FilePath = "Report4FilePath";
         public const string Report5FilePath = "Report5FilePath";
         public const string Report6FilePath = "Report6FilePath";
+        public const string Report7FilePath = "Report7FilePath";
+        public const string Report8FilePath = "Report8FilePath";
+        public const string Report9FilePath = "Report9FilePath";
 
         public const int Report1 = 1;
         public const int Report2 = 2;
