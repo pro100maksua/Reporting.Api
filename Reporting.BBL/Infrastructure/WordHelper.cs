@@ -183,7 +183,7 @@ namespace Reporting.BBL.Infrastructure
                 using var stream = new MemoryStream(report);
                 using var document = new WordDocument(stream, FormatType.Automatic);
 
-                destinationDocument.ImportContent(document, ImportOptions.UseDestinationStyles);
+                destinationDocument.ImportContent(document, ImportOptions.KeepSourceFormatting);
 
                 document.Close();
             }
