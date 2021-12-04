@@ -13,14 +13,14 @@ namespace Reporting.BBL.Infrastructure
 {
     public class WordHelper
     {
-        public byte[] GenerateReport1(Report1Data data, string templateFilePath)
+        public byte[] GenerateReport1(Report1Data data, string templateFilePath, int year)
         {
             return GenerateDocument(templateFilePath,
                 document =>
                 {
                     document.MailMerge.ClearFields = false;
 
-                    SetCommonData(document, data.Department);
+                    SetCommonData(document, data.Department, year);
 
                     SetReport1ActivityIndicatorsData(document, data.ActivityIndicator);
 
@@ -39,14 +39,15 @@ namespace Reporting.BBL.Infrastructure
 
         public byte[] GenerateReport2(Department department,
             IEnumerable<ReportDissertationDto> dissertations,
-            string templateFilePath)
+            string templateFilePath,
+            int year)
         {
             return GenerateDocument(templateFilePath,
                 document =>
                 {
                     document.MailMerge.ClearFields = false;
 
-                    SetCommonData(document, department);
+                    SetCommonData(document, department, year);
 
                     var dataTable = new MailMergeDataTable("Dissertations", dissertations);
 
@@ -58,14 +59,15 @@ namespace Reporting.BBL.Infrastructure
         public byte[] GenerateReport3(Department department,
             IEnumerable<Publication> publications,
             IEnumerable<PublicationType> publicationTypes,
-            string templateFilePath)
+            string templateFilePath,
+            int year)
         {
             return GenerateDocument(templateFilePath,
                 document =>
                 {
                     document.MailMerge.ClearFields = false;
 
-                    SetCommonData(document, department);
+                    SetCommonData(document, department, year);
 
                     document.MailMerge.ClearFields = true;
 
@@ -95,14 +97,15 @@ namespace Reporting.BBL.Infrastructure
 
         public byte[] GenerateReport4(Department department,
             IEnumerable<Report4PublicationDto> publications,
-            string templateFilePath)
+            string templateFilePath,
+            int year)
         {
             return GenerateDocument(templateFilePath,
                 document =>
                 {
                     document.MailMerge.ClearFields = false;
 
-                    SetCommonData(document, department);
+                    SetCommonData(document, department, year);
 
                     var dataTable = new MailMergeDataTable("Publications", publications);
 
@@ -115,14 +118,17 @@ namespace Reporting.BBL.Infrastructure
                 });
         }
 
-        public byte[] GenerateReport5(Department department, IEnumerable<Report5UserDto> users, string templateFilePath)
+        public byte[] GenerateReport5(Department department,
+            IEnumerable<Report5UserDto> users,
+            string templateFilePath,
+            int year)
         {
             return GenerateDocument(templateFilePath,
                 document =>
                 {
                     document.MailMerge.ClearFields = false;
 
-                    SetCommonData(document, department);
+                    SetCommonData(document, department, year);
 
                     var dataTable = new MailMergeDataTable("Authors", users);
 
@@ -133,14 +139,15 @@ namespace Reporting.BBL.Infrastructure
 
         public byte[] GenerateReport6(Department department,
             IDictionary<string, IEnumerable<ReportConferenceDto>> fieldsDictionary,
-            string templateFilePath)
+            string templateFilePath,
+            int year)
         {
             return GenerateDocument(templateFilePath,
                 document =>
                 {
                     document.MailMerge.ClearFields = false;
 
-                    SetCommonData(document, department);
+                    SetCommonData(document, department, year);
 
                     document.MailMerge.ClearFields = true;
 
@@ -154,14 +161,15 @@ namespace Reporting.BBL.Infrastructure
 
         public byte[] GenerateReport7(Department department,
             Dictionary<string, IEnumerable<ReportConferenceDto>> fieldsDictionary,
-            string templateFilePath)
+            string templateFilePath,
+            int year)
         {
             return GenerateDocument(templateFilePath,
                 document =>
                 {
                     document.MailMerge.ClearFields = false;
 
-                    SetCommonData(document, department);
+                    SetCommonData(document, department, year);
 
                     document.MailMerge.ClearFields = true;
 
@@ -212,12 +220,12 @@ namespace Reporting.BBL.Infrastructure
             return documentStream.ToArray();
         }
 
-        private void SetCommonData(IWordDocument document, Department department)
+        private void SetCommonData(IWordDocument document, Department department, int year)
         {
-            var fields = new[] { "Year", "Department", };
+            var fields = new[] { "Year", "Department" };
             var values = new[]
             {
-                DateTime.Today.Year.ToString(),
+                year.ToString(),
 
                 // skip first word
                 department.Name[(department.Name.Split()[0].Length + 1)..],
