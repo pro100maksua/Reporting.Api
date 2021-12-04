@@ -55,11 +55,11 @@ namespace Reporting.BBL.Services
             _mapper = mapper;
         }
 
-        public async Task<FileDto> DownloadDepartmentReports(int userId, int[] reportValues)
+        public async Task<FileDto> DownloadDepartmentReports(int userId, IEnumerable<int> reportValues, int year)
         {
             var reports = new List<byte[]>();
 
-            var actions = new Dictionary<int, Func<Department, Task<byte[]>>>
+            var actions = new Dictionary<int, Func<Department, int, Task<byte[]>>>
             {
                 { ReportsConstants.Report1, GenerateDepartmentReport1 },
                 { ReportsConstants.Report2, GenerateDepartmentReport2 },
@@ -76,7 +76,7 @@ namespace Reporting.BBL.Services
             {
                 if (actions.TryGetValue(value, out var action))
                 {
-                    reports.Add(await action(user.Department));
+                    reports.Add(await action(user.Department, year));
                 }
             }
 
@@ -91,8 +91,10 @@ namespace Reporting.BBL.Services
 
         public async Task<FileDto> GetUserReport3File(int userId)
         {
+            var currentYear = DateTime.Today.Year;
+
             var user = await _repository.Get<User>(e => e.Id == userId, new[] { nameof(User.Department) });
-            var publications = await _publicationsRepository.GetUserPublications(userId, DateTime.Today.Year);
+            var publications = await _publicationsRepository.GetUserPublications(userId, currentYear);
             var publicationTypes = await _repository.GetAll<PublicationType>();
 
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -109,19 +111,19 @@ namespace Reporting.BBL.Services
                 };
         }
 
-        private async Task<byte[]> GenerateDepartmentReport1(Department department)
+        private async Task<byte[]> GenerateDepartmentReport1(Department department, int year)
         {
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report1FilePath]);
 
             var data = new Report1Data(department,
-                await _activityIndicatorsRepository.Get(e => e.DepartmentId == department.Id && e.Year == DateTime.Today.Year),
-                await _publicationsRepository.GetDepartmentPublications(department.Id, DateTime.Today.Year),
+                await _activityIndicatorsRepository.Get(e => e.DepartmentId == department.Id && e.Year == year),
+                await _publicationsRepository.GetDepartmentPublications(department.Id, year),
                 await _repository.GetAll<PublicationType>(),
-                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, DateTime.Today.Year),
+                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, year),
                 await _creativeConnectionsRepository.GetDepartmentCreativeConnections(department.Id),
                 await _repository.GetAll<CreativeConnectionType>(),
-                await _studentsWorkRepository.GetStudentsWorkEntries(department.Id, DateTime.Today.Year),
+                await _studentsWorkRepository.GetStudentsWorkEntries(department.Id, year),
                 await _repository.GetAll<StudentsWorkType>(),
                 await _repository.GetAll<StudentsScientificWorkType>());
 
@@ -130,10 +132,10 @@ namespace Reporting.BBL.Services
             return pdf;
         }
 
-        private async Task<byte[]> GenerateDepartmentReport2(Department department)
+        private async Task<byte[]> GenerateDepartmentReport2(Department department, int year)
         {
             var dissertations =
-                await _dissertationsRepository.GetDepartmentDissertations(department.Id, DateTime.Today.Year);
+                await _dissertationsRepository.GetDepartmentDissertations(department.Id, year);
 
             var dtos = _mapper.Map<IEnumerable<ReportDissertationDto>>(dissertations,
                 opt => opt.Items[DissertationsConstants.Dissertations] = dissertations);
@@ -146,10 +148,10 @@ namespace Reporting.BBL.Services
             return pdf;
         }
 
-        private async Task<byte[]> GenerateDepartmentReport3(Department department)
+        private async Task<byte[]> GenerateDepartmentReport3(Department department, int year)
         {
             var publications =
-                await _publicationsRepository.GetDepartmentPublications(department.Id, DateTime.Today.Year);
+                await _publicationsRepository.GetDepartmentPublications(department.Id, year);
             var publicationTypes = await _repository.GetAll<PublicationType>();
 
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -160,9 +162,9 @@ namespace Reporting.BBL.Services
             return pdf;
         }
 
-        private async Task<byte[]> GenerateDepartmentReport4(Department department)
+        private async Task<byte[]> GenerateDepartmentReport4(Department department, int year)
         {
-            var publications = await _publicationsRepository.GetDepartmentForeignPublications(department.Id, DateTime.Today.Year);
+            var publications = await _publicationsRepository.GetDepartmentForeignPublications(department.Id, year);
 
             var dtos = _mapper.Map<IEnumerable<Report4PublicationDto>>(publications,
                 opt => opt.Items[ReportsConstants.Publications] = publications);
@@ -175,9 +177,9 @@ namespace Reporting.BBL.Services
             return pdf;
         }
 
-        private async Task<byte[]> GenerateDepartmentReport5(Department department)
+        private async Task<byte[]> GenerateDepartmentReport5(Department department, int year)
         {
-            var users = await _usersRepository.GetDepartmentUsersWithPublications(department.Id, DateTime.Today.Year);
+            var users = await _usersRepository.GetDepartmentUsersWithPublications(department.Id, year);
 
             var dtos = _mapper.Map<IEnumerable<Report5UserDto>>(users,
                 opt => opt.Items[ReportsConstants.Users] = users);
@@ -190,12 +192,12 @@ namespace Reporting.BBL.Services
             return pdf;
         }
 
-        private async Task<byte[]> GenerateDepartmentReport6(Department department)
+        private async Task<byte[]> GenerateDepartmentReport6(Department department, int year)
         {
             var conferenceTypes = await _repository.GetAll<ConferenceType>();
             var conferenceSubTypes = await _repository.GetAll<ConferenceSubType>();
             var conferences =
-                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, DateTime.Today.Year);
+                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, year);
 
             var dictionary = new Dictionary<string, IEnumerable<ReportConferenceDto>>();
 
@@ -237,10 +239,10 @@ namespace Reporting.BBL.Services
             return pdf;
         }
 
-        private async Task<byte[]> GenerateDepartmentReport7(Department department)
+        private async Task<byte[]> GenerateDepartmentReport7(Department department, int year)
         {
             var conferences =
-                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, DateTime.Today.Year);
+                await _conferencesRepository.GetDepartmentConferences(department.Id, null, null, year);
 
             var studentConferenceTypes = new[]
             {

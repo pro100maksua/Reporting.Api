@@ -20,11 +20,11 @@ namespace Reporting.API.Controllers
         }
 
         [HttpGet("DownloadDepartmentReports")]
-        public async Task<ActionResult> DownloadDepartmentReports([FromQuery] int[] reports)
+        public async Task<ActionResult> DownloadDepartmentReports([FromQuery] int[] reports, [FromQuery] int year)
         {
             var userId = int.Parse(_currentUserService.UserId);
 
-            var file = await _reportsService.DownloadDepartmentReports(userId, reports);
+            var file = await _reportsService.DownloadDepartmentReports(userId, reports, year);
 
             if (file == null)
             {
