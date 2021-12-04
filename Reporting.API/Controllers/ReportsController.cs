@@ -34,6 +34,19 @@ namespace Reporting.API.Controllers
             return File(file.Bytes, file.ContentType, file.FileName);
         }
 
+        [HttpGet("DownloadFacultyReports")]
+        public async Task<ActionResult> DownloadFacultyReports([FromQuery] int departmentId, [FromQuery] int[] reports, [FromQuery] int year)
+        {
+            var file = await _reportsService.DownloadFacultyReports(departmentId, reports, year);
+
+            if (file == null)
+            {
+                return NotFound(new { message = "Файл не знайдено." });
+            }
+
+            return File(file.Bytes, file.ContentType, file.FileName);
+        }
+
         [HttpGet("UserReport3File")]
         public async Task<ActionResult> GetUserReport3File()
         {

@@ -7,6 +7,7 @@ namespace Reporting.BBL.Interfaces
     public interface IReportsService
     {
         Task<FileDto> DownloadDepartmentReports(int userId, IEnumerable<int> reportValues, int year);
+        Task<FileDto> DownloadFacultyReports(int departmentId, IEnumerable<int> reportValues, int year);
         Task<FileDto> GetUserReport3File(int userId);
     }
 }

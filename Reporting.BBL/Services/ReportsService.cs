@@ -57,36 +57,16 @@ namespace Reporting.BBL.Services
 
         public async Task<FileDto> DownloadDepartmentReports(int userId, IEnumerable<int> reportValues, int year)
         {
-            var reports = new List<byte[]>();
-
-            var actions = new Dictionary<int, Func<Department, int, Task<byte[]>>>
-            {
-                { ReportsConstants.Report1, GenerateDepartmentReport1 },
-                { ReportsConstants.Report2, GenerateDepartmentReport2 },
-                { ReportsConstants.Report3, GenerateDepartmentReport3 },
-                { ReportsConstants.Report4, GenerateDepartmentReport4 },
-                { ReportsConstants.Report5, GenerateDepartmentReport5 },
-                { ReportsConstants.Report6, GenerateDepartmentReport6 },
-                { ReportsConstants.Report7, GenerateDepartmentReport7 },
-            };
-
             var user = await _repository.Get<User>(e => e.Id == userId, new[] { nameof(User.Department) });
 
-            foreach (var value in reportValues)
-            {
-                if (actions.TryGetValue(value, out var action))
-                {
-                    reports.Add(await action(user.Department, year));
-                }
-            }
+            return await DownloadReports(user.Department, reportValues, year);
+        }
 
-            var file = reports.Count > 1 ? _wordHelper.MergeDocuments(reports) : reports.First();
+        public async Task<FileDto> DownloadFacultyReports(int departmentId, IEnumerable<int> reportValues, int year)
+        {
+            var department = await _repository.Get<Department>(departmentId);
 
-            return new FileDto
-            {
-                Bytes = file,
-                ContentType = ReportsConstants.DocxContentType,
-            };
+            return await DownloadReports(department, reportValues, year);
         }
 
         public async Task<FileDto> GetUserReport3File(int userId)
@@ -113,6 +93,38 @@ namespace Reporting.BBL.Services
                     Bytes = pdf,
                     ContentType = ReportsConstants.DocxContentType,
                 };
+        }
+
+        private async Task<FileDto> DownloadReports(Department department, IEnumerable<int> reportValues, int year)
+        {
+            var reports = new List<byte[]>();
+
+            var actions = new Dictionary<int, Func<Department, int, Task<byte[]>>>
+            {
+                { ReportsConstants.Report1, GenerateDepartmentReport1 },
+                { ReportsConstants.Report2, GenerateDepartmentReport2 },
+                { ReportsConstants.Report3, GenerateDepartmentReport3 },
+                { ReportsConstants.Report4, GenerateDepartmentReport4 },
+                { ReportsConstants.Report5, GenerateDepartmentReport5 },
+                { ReportsConstants.Report6, GenerateDepartmentReport6 },
+                { ReportsConstants.Report7, GenerateDepartmentReport7 },
+            };
+
+            foreach (var value in reportValues)
+            {
+                if (actions.TryGetValue(value, out var action))
+                {
+                    reports.Add(await action(department, year));
+                }
+            }
+
+            var file = reports.Count > 1 ? _wordHelper.MergeDocuments(reports) : reports.First();
+
+            return new FileDto
+            {
+                Bytes = file,
+                ContentType = ReportsConstants.DocxContentType,
+            };
         }
 
         private async Task<byte[]> GenerateDepartmentReport1(Department department, int year)
