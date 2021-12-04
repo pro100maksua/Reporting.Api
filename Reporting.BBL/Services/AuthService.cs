@@ -48,7 +48,7 @@ namespace Reporting.BBL.Services
                 return null;
             }
 
-            return GenerateToken(user);
+            return await GenerateToken(user);
         }
 
         public async Task<ResponseDto<string>> Register(RegisterDto dto)
@@ -72,7 +72,7 @@ namespace Reporting.BBL.Services
             await _repository.Add<User>(user);
             await _unitOfWork.SaveChanges();
 
-            response.Value = GenerateToken(user);
+            response.Value = await GenerateToken(user);
             return response;
         }
 
@@ -115,7 +115,7 @@ namespace Reporting.BBL.Services
 
             await _unitOfWork.SaveChanges();
 
-            response.Value = GenerateToken(user);
+            response.Value = await GenerateToken(user);
             return response;
         }
 
@@ -127,7 +127,7 @@ namespace Reporting.BBL.Services
             return _mapper.Map<UserDto>(user);
         }
 
-        private string GenerateToken(User user)
+        private async Task<string> GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration[AppConstants.Secret]);
@@ -137,7 +137,10 @@ namespace Reporting.BBL.Services
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.Name),
             };
-            claims.AddRange(user.Roles.Select(e => new Claim(ClaimTypes.Role, e.Value.ToString())));
+
+            var roles = await _repository.GetAll<Role>();
+            var userRoles = roles.Where(e => e.Value <= user.Roles.Max(r => r.Value));
+            claims.AddRange(userRoles.Select(e => new Claim(ClaimTypes.Role, e.Value.ToString())));
 
             var tokenDescription = new SecurityTokenDescriptor
             {
