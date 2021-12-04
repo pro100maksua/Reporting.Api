@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Caching.Memory;
@@ -72,6 +73,15 @@ namespace Reporting.BBL.Services
             var user = await _repository.Get<User>(userId);
 
             var publications = await _publicationsRepository.GetDepartmentPublications(user.DepartmentId);
+
+            var dtos = _mapper.Map<IEnumerable<PublicationDto>>(publications);
+
+            return dtos;
+        }
+
+        public async Task<IEnumerable<PublicationDto>> GetFacultyPublications(int? departmentId)
+        {
+            var publications = await _publicationsRepository.GetDepartmentPublications(departmentId);
 
             var dtos = _mapper.Map<IEnumerable<PublicationDto>>(publications);
 
@@ -271,34 +281,61 @@ namespace Reporting.BBL.Services
 
                     if (!string.IsNullOrEmpty(dto.ConferenceDates))
                     {
-                        var datePieces = dto.ConferenceDates.Split(" ");
+                        var monthsCount = new CultureInfo("en-US").DateTimeFormat.AbbreviatedMonthNames
+                            .Take(12)
+                            .Select(m => dto.ConferenceDates.IndexOf(m, StringComparison.Ordinal))
+                            .Count(i => i != -1);
 
-                        var days = datePieces[0].Split("-");
-                        var month = datePieces[1][..3];
-                        var year = datePieces[2];
-
-                        if (DateTime.TryParseExact($"{days[0]} {month} {year}",
-                            "d MMM yyyy",
-                            CultureInfo.InvariantCulture,
-                            DateTimeStyles.None,
-                            out var startDate))
+                        if (monthsCount > 1)
                         {
-                            conference.StartDate = startDate;
+                            var matches = Regex.Matches(dto.ConferenceDates, @"(\d{1,2}) (\w+)");
+                            var yearMatch = Regex.Match(dto.ConferenceDates, @"\d{4}");
+
+                            if (matches.Count == 2)
+                            {
+                                var startDatePieces = matches[0].Value.Split();
+                                var endDatePieces = matches[1].Value.Split();
+
+                                var startDay = startDatePieces[0];
+                                var startMonth = startDatePieces[1][..3];
+
+                                var endDay = endDatePieces[0];
+                                var endMonth = endDatePieces[1][..3];
+
+                                conference.StartDate = ParseDate($"{startDay} {startMonth} {yearMatch.Value}");
+                                conference.EndDate = ParseDate($"{endDay} {endMonth} {yearMatch.Value}");
+                            }
                         }
-
-                        if (DateTime.TryParseExact($"{days[1]} {month} {year}",
-                            "d MMM yyyy",
-                            CultureInfo.InvariantCulture,
-                            DateTimeStyles.None,
-                            out var endDate))
+                        else
                         {
-                            conference.EndDate = endDate;
+                            var datePieces = dto.ConferenceDates.Split(" ");
+
+                            var days = datePieces[0].Split("-");
+                            var month = datePieces[1][..3];
+                            var year = datePieces[2];
+
+                            conference.StartDate = ParseDate($"{days[0]} {month} {year}");
+                            conference.EndDate = ParseDate($"{days[1]} {month} {year}");
                         }
                     }
 
                     publication.Conference = conference;
                 }
             }
+        }
+
+        private DateTime? ParseDate(string dateString)
+        {
+            if (DateTime.TryParseExact(dateString,
+                "d MMM yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var date))
+            {
+                return date;
+            }
+
+            return null;
         }
     }
 }

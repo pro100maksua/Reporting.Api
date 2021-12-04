@@ -45,6 +45,12 @@ namespace Reporting.BBL.Infrastructure.Mappings
                 return conference.StartDate?.ToString("dd MMMM yyyy", culture);
             }
 
+            if (conference.StartDate?.Month != conference.EndDate?.Month)
+            {
+                return
+                    $"{conference.StartDate?.Day} {conference.StartDate?.ToString("MMM", culture)} - {conference.EndDate?.Day} {conference.EndDate?.ToString("MMM yyyy", culture)}";
+            }
+
             return
                 $"{conference.StartDate?.Day}-{conference.EndDate?.Day} {conference.StartDate?.ToString("MMMM yyyy", culture)}";
         }

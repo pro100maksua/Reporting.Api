@@ -9,6 +9,7 @@ namespace Reporting.BBL.Interfaces
         Task<IEnumerable<ComboboxItemDto>> GetPublicationTypes();
         Task<IEnumerable<PublicationDto>> GetUserPublications(int userId);
         Task<IEnumerable<PublicationDto>> GetDepartmentPublications(int userId);
+        Task<IEnumerable<PublicationDto>> GetFacultyPublications(int? departmentId);
         Task<ResponseDto<PublicationDto>> CreatePublication(CreatePublicationDto dto);
         Task<ResponseDto<PublicationDto>> UpdatePublication(int id, CreatePublicationDto dto);
         Task DeletePublication(int id);
