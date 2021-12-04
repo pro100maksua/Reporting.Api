@@ -100,7 +100,11 @@ namespace Reporting.BBL.Services
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report3FilePath]);
 
-            var pdf = _wordHelper.GenerateReport3(user.Department, publications, publicationTypes, templateFilePath);
+            var pdf = _wordHelper.GenerateReport3(user.Department,
+                publications,
+                publicationTypes,
+                templateFilePath,
+                currentYear);
 
             return pdf == null
                 ? null
@@ -127,7 +131,7 @@ namespace Reporting.BBL.Services
                 await _repository.GetAll<StudentsWorkType>(),
                 await _repository.GetAll<StudentsScientificWorkType>());
 
-            var pdf = _wordHelper.GenerateReport1(data, templateFilePath);
+            var pdf = _wordHelper.GenerateReport1(data, templateFilePath, year);
 
             return pdf;
         }
@@ -143,7 +147,7 @@ namespace Reporting.BBL.Services
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report2FilePath]);
 
-            var pdf = _wordHelper.GenerateReport2(department, dtos, templateFilePath);
+            var pdf = _wordHelper.GenerateReport2(department, dtos, templateFilePath, year);
 
             return pdf;
         }
@@ -157,7 +161,7 @@ namespace Reporting.BBL.Services
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report3FilePath]);
 
-            var pdf = _wordHelper.GenerateReport3(department, publications, publicationTypes, templateFilePath);
+            var pdf = _wordHelper.GenerateReport3(department, publications, publicationTypes, templateFilePath, year);
 
             return pdf;
         }
@@ -172,7 +176,7 @@ namespace Reporting.BBL.Services
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report4FilePath]);
 
-            var pdf = _wordHelper.GenerateReport4(department, dtos, templateFilePath);
+            var pdf = _wordHelper.GenerateReport4(department, dtos, templateFilePath, year);
 
             return pdf;
         }
@@ -187,7 +191,7 @@ namespace Reporting.BBL.Services
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report5FilePath]);
 
-            var pdf = _wordHelper.GenerateReport5(department, dtos, templateFilePath);
+            var pdf = _wordHelper.GenerateReport5(department, dtos, templateFilePath, year);
 
             return pdf;
         }
@@ -234,7 +238,7 @@ namespace Reporting.BBL.Services
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report6FilePath]);
 
-            var pdf = _wordHelper.GenerateReport6(department, dictionary, templateFilePath);
+            var pdf = _wordHelper.GenerateReport6(department, dictionary, templateFilePath, year);
 
             return pdf;
         }
@@ -269,7 +273,7 @@ namespace Reporting.BBL.Services
             var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var templateFilePath = Path.Combine(directory, _configuration[ReportsConstants.Report7FilePath]);
 
-            var pdf = _wordHelper.GenerateReport7(department, dictionary, templateFilePath);
+            var pdf = _wordHelper.GenerateReport7(department, dictionary, templateFilePath, year);
 
             return pdf;
         }
