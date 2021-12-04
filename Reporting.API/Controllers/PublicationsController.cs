@@ -48,6 +48,14 @@ namespace Reporting.API.Controllers
             return Ok(publications);
         }
 
+        [HttpGet("FacultyPublications")]
+        public async Task<ActionResult> GetFacultyPublications([FromQuery] int? departmentId)
+        {
+            var publications = await _publicationsService.GetFacultyPublications(departmentId);
+
+            return Ok(publications);
+        }
+
         [HttpPost("Publications")]
         public async Task<ActionResult> CreatePublication([FromBody] CreatePublicationDto dto)
         {

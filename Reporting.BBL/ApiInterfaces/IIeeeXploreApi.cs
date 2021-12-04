@@ -14,6 +14,7 @@ namespace Reporting.BBL.ApiInterfaces
             [Query("article_title")] string title);
 
         [Get("search/articles")]
-        Task<ScopusSearchResult> GetAuthorArticlesAsync([Query("author")] string authorName);
+        Task<ScopusSearchResult> GetAuthorArticlesAsync([Query("author")] string authorName,
+            [Query("max_records")] int maxRecords = 200);
     }
 }
