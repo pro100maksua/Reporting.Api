@@ -20,20 +20,23 @@ namespace Reporting.BBL.Services
         {
             var lastPage = await GetLastPage();
 
-            var parseTasks = Enumerable.Range(1, int.Parse(lastPage)).Select(async n =>
-            {
-                var response = await _journalsApi.GetScientificJournalsAsync(n);
+            var journalNames = new List<string>();
 
-                var doc = new HtmlDocument();
-                doc.LoadHtml(response);
+            await Parallel.ForEachAsync(
+                 Enumerable.Range(1, int.Parse(lastPage)),
+                 async (page, _) =>
+                 {
+                     var response = await _journalsApi.GetScientificJournalsAsync(page);
 
-                var journalNodes =
-                    doc.DocumentNode.SelectNodes("//div[@name='searchBlockElement']/div[@name='nameSearchMain']//a");
+                     var doc = new HtmlDocument();
+                     doc.LoadHtml(response);
 
-                return journalNodes.Select(e => e.InnerText);
-            });
+                     var journalNodes =
+                         doc.DocumentNode.SelectNodes(
+                             "//div[@name='searchBlockElement']/div[@name='nameSearchMain']//a");
 
-            var journalNames = (await Task.WhenAll(parseTasks)).SelectMany(e => e).ToList();
+                     journalNames.AddRange(journalNodes.Select(e => e.InnerText));
+                 });
 
             return journalNames;
         }
