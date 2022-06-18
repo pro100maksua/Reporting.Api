@@ -5,7 +5,7 @@ namespace Reporting.BBL.ApiInterfaces
 {
     public interface IScientificJournalsApi
     {
-        [Get("search?galuzSearch[]=технічні&categorySearch[]=b")]
+        [Get("search?sortOrder=title&galuzSearch%5B0%5D=технічні&categorySearch%5B0%5D=b")]
         Task<string> GetScientificJournalsAsync([Query] int page = default);
     }
 }
