@@ -4,19 +4,19 @@ name: Trigger auto deployment for wunu-reporting-api
 on:
   # Automatically trigger it when detected changes in repo
   push:
-    branches: 
+    branches:
       [ master ]
     paths:
     - '**'
     - '.github/workflows/wunu-reporting-api-AutoDeployTrigger-448a421f-2bc7-48a2-b42f-8c8658b85a3c.yml'
 
-  # Allow manual trigger 
-  workflow_dispatch:      
+  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       id-token: write #This is required for requesting the OIDC JWT Token
       contents: read #Required when GH token is used to authenticate with private repo
 
@@ -34,8 +34,8 @@ jobs:
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}/Reporting.API
-          _dockerfilePathKey_: _dockerfilePath_
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: Reporting.API/Dockerfile
           _targetLabelKey_: _targetLabel_
           registryUrl: wunureporting.azurecr.io
           registryUsername: ${{ secrets.WUNUREPORTINGAPI_REGISTRY_USERNAME }}
@@ -45,5 +45,3 @@ jobs:
           imageToBuild: wunureporting.azurecr.io/wunu-reporting-api:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
-
-
